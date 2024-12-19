@@ -10,48 +10,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selectedFile = null;
     let currentSessionId = null;
-    let downloadedStems = new Set();
 
-    // Drag and drop handlers
+    // Prevent defaults for drag and drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false);
+        dropArea.addEventListener(eventName, function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
     });
 
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
+    // Visual feedback for drag and drop
     ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, () => {
+        dropArea.addEventListener(eventName, function() {
             dropArea.classList.add('drag-over');
         });
     });
 
     ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, () => {
+        dropArea.addEventListener(eventName, function() {
             dropArea.classList.remove('drag-over');
         });
     });
 
-    dropArea.addEventListener('drop', handleDrop);
-    fileInput.addEventListener('change', handleFileSelect);
+    // Handle file selection
+    dropArea.addEventListener('drop', function(e) {
+        handleFiles(e.dataTransfer.files);
+    });
 
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
-    }
-
-    function handleFileSelect(e) {
-        const files = e.target.files;
-        handleFiles(files);
-    }
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
 
     function handleFiles(files) {
         if (files.length > 0) {
-            selectedFile = files[0];
-            fileMsg.textContent = selectedFile.name;
+            const file = files[0];
+            
+            // Check if file is audio
+            if (!file.type.startsWith('audio/')) {
+                showError('Please select an audio file');
+                return;
+            }
+
+            // Check file size (15MB limit)
+            if (file.size > 15 * 1024 * 1024) {
+                showError('File is too large. Please select a file under 15MB');
+                return;
+            }
+
+            selectedFile = file;
+            fileMsg.textContent = file.name;
             separateBtn.disabled = false;
         }
     }
@@ -62,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         progressBar.style.width = '0%';
         stemsSection.style.display = 'none';
         
-        // Reset file input
+        // Reset file selection
         fileInput.value = '';
         selectedFile = null;
         fileMsg.textContent = '';
@@ -72,98 +79,62 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateStemsSection(data) {
         stemsSection.style.display = 'grid';
         currentSessionId = data.session_id;
-        downloadedStems.clear();
-        
-        // Update audio players and download buttons
+
+        // Update each stem card
         Object.entries(data.stems).forEach(([stem, url]) => {
             const card = document.querySelector(`.stem-card[data-stem="${stem}"]`);
             if (!card) return;
 
-            const audio = card.querySelector('audio');
-            const downloadBtn = card.querySelector('.download-btn');
-            
             // Update audio player
+            const audio = card.querySelector('audio');
             if (audio) {
-                audio.src = url;
-                audio.load(); // Reload the audio element with new source
+                const source = audio.querySelector('source');
+                if (source) {
+                    source.src = url;
+                }
+                audio.load();
             }
-            
-            // Update download button
+
+            // Set up download button with proper filename
+            const downloadBtn = card.querySelector('.download-btn');
             if (downloadBtn) {
-                downloadBtn.href = url;
-                const originalFileName = selectedFile ? selectedFile.name.split('.')[0] : 'audio';
-                const downloadFilename = `${originalFileName}_${stem}.mp3`;
+                const originalName = selectedFile ? selectedFile.name.split('.')[0] : 'audio';
+                const stemFilename = `${originalName}_${stem}.mp3`;
                 
-                // Remove existing listeners
+                // Remove any existing listeners
                 const newBtn = downloadBtn.cloneNode(true);
                 downloadBtn.parentNode.replaceChild(newBtn, downloadBtn);
                 
-                newBtn.addEventListener('click', (e) => {
+                newBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     
+                    // Create temporary link for download
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = downloadFilename;
+                    link.download = stemFilename;
                     document.body.appendChild(link);
+                    
+                    // Trigger download
                     link.click();
+                    
+                    // Clean up
                     document.body.removeChild(link);
-
-                    // Track this stem as downloaded
-                    downloadedStems.add(stem);
-
-                    // If all stems have been downloaded, clean up
-                    if (downloadedStems.size === Object.keys(data.stems).length) {
-                        cleanupFiles();
-                        statusText.textContent = 'All stems downloaded. Files cleaned up.';
-                        cleanupAudioElements();
-                    }
                 });
             }
         });
     }
 
-    // Clean up function for audio elements
-    function cleanupAudioElements() {
-        const audioElements = stemsSection.querySelectorAll('audio');
-        audioElements.forEach(audio => {
-            audio.pause();
-            audio.src = '';
-            audio.load();
-        });
-    }
-
-    // Clean up server files
-    function cleanupFiles() {
-        if (currentSessionId) {
-            fetch(`/cleanup_stems/${currentSessionId}`, {
-                method: 'POST'
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      console.log('Stems cleaned up successfully');
-                  }
-              })
-              .catch(error => console.error('Cleanup error:', error));
-        }
-    }
-
-    separateBtn.addEventListener('click', async () => {
+    separateBtn.addEventListener('click', async function() {
         if (!selectedFile) return;
-
-        // Clean up any existing files first
-        if (currentSessionId) {
-            cleanupFiles();
-            cleanupAudioElements();
-        }
 
         const formData = new FormData();
         formData.append('audio_file', selectedFile);
 
-        // Show separation status
+        // Reset and show status
         separationStatus.style.display = 'block';
         progressBar.style.width = '0%';
         statusText.style.color = '#F5F5DC';
-        statusText.textContent = 'Separating stems... This may take a few minutes.';
+        statusText.textContent = 'Processing... This may take a few minutes.';
         separateBtn.disabled = true;
         stemsSection.style.display = 'none';
 
@@ -175,24 +146,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: formData
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Separation failed');
-            }
-
             const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Separation failed');
+            }
 
             if (data.success) {
                 progressBar.style.width = '100%';
                 statusText.textContent = 'Separation complete! Click to download stems.';
                 updateStemsSection(data);
-                
-                // Reset form
-                fileInput.value = '';
-                selectedFile = null;
-                fileMsg.textContent = '';
             } else {
-                showError(data.error || 'Separation failed');
+                throw new Error(data.error || 'Separation failed');
             }
         } catch (error) {
             console.error('Separation error:', error);
@@ -202,17 +167,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Clean up when leaving the page
-    window.addEventListener('beforeunload', () => {
-        cleanupFiles();
-        cleanupAudioElements();
-    });
-
-    // Clean up when visibility changes (page refresh or navigation)
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            cleanupFiles();
-            cleanupAudioElements();
+    // Clean up when leaving page
+    window.addEventListener('beforeunload', function() {
+        if (currentSessionId) {
+            navigator.sendBeacon(`/cleanup_stems/${currentSessionId}`);
         }
     });
 });

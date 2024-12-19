@@ -1,4 +1,3 @@
-/* Save this as static/css/separator.css */
 .separator-container {
     max-width: 800px;
     margin: 20px auto;
@@ -6,6 +5,16 @@
     background-color: #181818;
     border-radius: 10px;
     box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.notice {
+    text-align: center;
+    color: #F5F5DC;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: rgba(245, 245, 220, 0.1);
+    border-radius: 5px;
+    font-size: 0.9rem;
 }
 
 .separator-form {
@@ -23,6 +32,12 @@
     text-align: center;
     transition: all 0.3s ease;
     background-color: rgba(245, 245, 220, 0.05);
+    cursor: pointer;
+}
+
+.file-drop-area:hover {
+    background-color: rgba(245, 245, 220, 0.1);
+    border-color: #F5F5DC;
 }
 
 .file-drop-area.drag-over {
@@ -49,6 +64,7 @@
 .file-name {
     color: rgba(245, 245, 220, 0.8);
     font-size: 1rem;
+    word-break: break-all;
 }
 
 #separate-btn {
@@ -60,11 +76,13 @@
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin: 20px 0;
 }
 
 #separate-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    background-color: #666;
 }
 
 #separate-btn:not(:disabled):hover {
@@ -77,6 +95,7 @@
     background-color: rgba(245, 245, 220, 0.1);
     border-radius: 2px;
     margin: 10px 0;
+    overflow: hidden;
 }
 
 .separator-progress {
@@ -91,6 +110,7 @@
     color: #F5F5DC;
     font-size: 1rem;
     text-align: center;
+    margin: 10px 0;
 }
 
 .stems-section {
@@ -105,21 +125,33 @@
     padding: 20px;
     border-radius: 10px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .stem-card h3 {
     color: #F5F5DC;
-    margin-bottom: 15px;
+    margin: 0;
     font-size: 1.2rem;
 }
 
 .stem-card audio {
     width: 100%;
-    margin-top: 10px;
+    margin: 10px 0;
+}
+
+.stem-card audio::-webkit-media-controls-panel {
+    background-color: #2c2c2c;
+}
+
+.stem-card audio::-webkit-media-controls-current-time-display,
+.stem-card audio::-webkit-media-controls-time-remaining-display {
+    color: #F5F5DC;
 }
 
 .download-btn {
-    padding: 8px 16px;
+    padding: 10px 20px;
     background-color: #F5F5DC;
     color: #000000;
     border: none;
@@ -127,6 +159,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 1rem;
+    width: 100%;
 }
 
 .download-btn:hover {
@@ -140,6 +173,18 @@
         padding: 10px;
     }
 
+    .separator-form {
+        padding: 10px;
+    }
+
+    .file-drop-area {
+        padding: 20px;
+    }
+
+    .file-msg {
+        font-size: 1rem;
+    }
+
     .stems-section {
         grid-template-columns: 1fr;
     }
@@ -148,12 +193,19 @@
         padding: 15px;
     }
 
-    .file-msg {
-        font-size: 1rem;
-    }
-
     #separate-btn {
         padding: 12px;
         font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .file-msg {
+        font-size: 0.9rem;
+    }
+
+    .download-btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
     }
 }

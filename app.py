@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 from together import Together
 import ssl
 import shutil
+import gc
 import torch
 from demucs.pretrained import get_model
 from demucs.apply import apply_model
@@ -89,6 +90,8 @@ def convert_audio(input_path, output_path, output_format):
 
 # Routes
 
+import gc  # Add this import at the top
+
 @app.route('/analyze', methods=['GET', 'POST'])
 def analyze_audio():
     if request.method == 'POST':
@@ -105,6 +108,17 @@ def analyze_audio():
                 'error': 'No file selected'
             }), 400
 
+        # Check file size - limit to 10MB
+        audio_file.seek(0, os.SEEK_END)
+        file_size = audio_file.tell()
+        audio_file.seek(0)
+        
+        if file_size > 10 * 1024 * 1024:  # 10MB limit
+            return jsonify({
+                'success': False,
+                'error': 'File size too large. Please upload a file smaller than 10MB'
+            }), 400
+
         file_uuid = str(uuid.uuid4())
         original_filename = secure_filename(audio_file.filename)
         input_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_uuid}_{original_filename}")
@@ -112,39 +126,61 @@ def analyze_audio():
         try:
             audio_file.save(input_path)
             
-            # Load the audio file with librosa
-            y, sr = librosa.load(input_path)
+            # Load the audio file with librosa using a lower sample rate and mono
+            y, sr = librosa.load(input_path, sr=22050, mono=True)
             
-            # Get onset envelope
-            onset_env = librosa.onset.onset_strength(y=y, sr=sr)
+            # Free up memory from the raw audio file
+            del audio_file
+            gc.collect()
             
-            # Dynamic tempo detection
-            dtempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr, aggregate=None)
+            # Get onset envelope with reduced complexity
+            onset_env = librosa.onset.onset_strength(y=y, sr=sr, hop_length=512)
             
-            # Calculate all possible tempos and their strengths
+            # Free up memory from raw audio data
+            del y
+            gc.collect()
+            
+            # Dynamic tempo detection with simplified parameters
+            dtempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr, aggregate=None,
+                                      hop_length=512, start_bpm=120)
+            
+            # Calculate tempos more efficiently
             tempo_frequencies = np.bincount(np.round(dtempo).astype(int))
             possible_tempos = np.where(tempo_frequencies > 0)[0]
             tempo_strengths = tempo_frequencies[possible_tempos]
             
-            # Find the most likely tempo considering harmonics
+            # Free up memory
+            del onset_env
+            del dtempo
+            gc.collect()
+            
+            # Find the most likely tempo
             tempo_candidates = []
             for tempo in possible_tempos:
-                # Consider the tempo and its harmonics/sub-harmonics
                 score = (tempo_frequencies[tempo] if tempo < len(tempo_frequencies) else 0)
                 score += (tempo_frequencies[tempo//2] if tempo//2 < len(tempo_frequencies) else 0)
                 score += (tempo_frequencies[tempo*2] if tempo*2 < len(tempo_frequencies) else 0)
                 tempo_candidates.append((tempo, score))
             
-            # Sort by score and get the best tempo
+            # Get the best tempo
             best_tempo = sorted(tempo_candidates, key=lambda x: x[1], reverse=True)[0][0]
             
-            # Detect key
-            chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
+            # Load audio again for key detection with very low duration
+            y, sr = librosa.load(input_path, sr=22050, duration=30, mono=True)
+            
+            # Detect key with simplified parameters
+            chroma = librosa.feature.chroma_cqt(y=y, sr=sr, hop_length=512, n_chroma=12)
             key_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
             key = key_names[np.argmax(np.mean(chroma, axis=1))]
             
             # Clean up
-            os.remove(input_path)
+            del y
+            del chroma
+            gc.collect()
+            
+            # Remove input file
+            if os.path.exists(input_path):
+                os.remove(input_path)
             
             return jsonify({
                 'success': True,
@@ -160,104 +196,147 @@ def analyze_audio():
                 'success': False,
                 'error': str(e)
             }), 500
+        finally:
+            # Final cleanup
+            gc.collect()
 
     latest_track = Track.query.order_by(Track.date_added.desc()).first()
     return render_template('analyze.html', latest_track=latest_track)
 
 @app.route('/separator', methods=['GET', 'POST'])
 def stem_separator():
-    if request.method == 'POST':
-        if 'audio_file' not in request.files:
-            return jsonify({
-                'success': False,
-                'error': 'No file selected'
-            }), 400
+   if request.method == 'POST':
+       if 'audio_file' not in request.files:
+           return jsonify({
+               'success': False,
+               'error': 'No file selected'
+           }), 400
 
-        audio_file = request.files['audio_file']
-        if audio_file.filename == '':
-            return jsonify({
-                'success': False,
-                'error': 'No file selected'
-            }), 400
+       audio_file = request.files['audio_file']
+       if audio_file.filename == '':
+           return jsonify({
+               'success': False,
+               'error': 'No file selected'
+           }), 400
 
-        # Generate unique filenames
-        file_uuid = str(uuid.uuid4())
-        original_filename = secure_filename(audio_file.filename)
-        input_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_uuid}_{original_filename}")
-        output_dir = file_uuid + "_" + os.path.splitext(original_filename)[0]
-        
-        try:
-            # Save input file
-            audio_file.save(input_path)
-            print("File saved")
-            
-            # Perform separation
-            demucs.separate.main(["--mp3", "--out", app.config['CONVERTED_FOLDER'], input_path])
-            
-            # Generate URLs for stems
-            stem_paths = {}
-            stems = ['drums', 'bass', 'vocals', 'other']
-            
-            # Check both possible directory names
-            possible_dirs = [
-                output_dir,  # UUID_filename format
-                file_uuid,   # Just UUID format
-                os.path.splitext(original_filename)[0]  # Just filename format
-            ]
-            
-            found_dir = None
-            for dir_name in possible_dirs:
-                check_path = os.path.join(app.config['CONVERTED_FOLDER'], 'htdemucs', dir_name)
-                if os.path.exists(check_path):
-                    found_dir = dir_name
-                    break
-            
-            if found_dir:
-                for stem in stems:
-                    stem_filename = f"{stem}.mp3"
-                    full_path = os.path.join(app.config['CONVERTED_FOLDER'], 'htdemucs', found_dir, stem_filename)
-                    if os.path.exists(full_path):
-                        # Create URL using url_for
-                        relative_path = os.path.join('htdemucs', found_dir, stem_filename)
-                        stem_paths[stem] = url_for('static', filename=f'converted/{relative_path}')
-                        print(f"Generated URL for {stem} stem: {stem_paths[stem]}")
-            
-            # Clean up input file
-            if os.path.exists(input_path):
-                os.remove(input_path)
-                print("Input file cleaned up")
-            
-            return jsonify({
-                'success': True,
-                'stems': stem_paths,
-                'session_id': found_dir
-            })
-            
-        except Exception as e:
-            # Clean up input file in case of error
-            if os.path.exists(input_path):
-                os.remove(input_path)
-            print(f"Separation error: {str(e)}")
-            print(f"Full error details: {traceback.format_exc()}")
-            return jsonify({
-                'success': False,
-                'error': str(e)
-            }), 500
+       # Verify file type 
+       if not audio_file.filename.lower().endswith(('.mp3', '.wav', '.m4a', '.flac')):
+           return jsonify({
+               'success': False,
+               'error': 'Invalid file type. Please upload an MP3, WAV, M4A, or FLAC file.'
+           }), 400
 
-    latest_track = Track.query.order_by(Track.date_added.desc()).first()
-    return render_template('separator.html', latest_track=latest_track)
+       # Check file size - 15MB limit
+       file_size = 0
+       audio_file.seek(0, os.SEEK_END)
+       file_size = audio_file.tell()
+       audio_file.seek(0)
+       
+       if file_size > 15 * 1024 * 1024:
+           return jsonify({
+               'success': False,
+               'error': 'File too large. Please upload a file smaller than 15MB'
+           }), 400
+
+       # Create unique filenames
+       file_uuid = str(uuid.uuid4())
+       original_filename = secure_filename(audio_file.filename)
+       input_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_uuid}_{original_filename}")
+       output_dir = file_uuid + "_" + os.path.splitext(original_filename)[0]
+       
+       try:
+           # Save input file
+           audio_file.save(input_path)
+           print(f"File saved: {input_path}")
+
+           # Clear memory
+           del audio_file
+           gc.collect()
+           
+           # Configure demucs for separation with correct parameters
+           demucs.separate.main([
+               "--mp3",
+               "-n", "htdemucs",
+               "--segment", "7",
+               "-d", "cpu",
+               "--overlap", "0.1",
+               "--out", app.config['CONVERTED_FOLDER'],
+               input_path
+           ])
+           
+           # Generate URLs for stems
+           stem_paths = {}
+           source_stems = ['drums', 'bass', 'vocals', 'other']
+           display_stems = ['drums', 'bass', 'vocals', 'melody']
+           
+           # Find output directory
+           possible_dirs = [
+               output_dir,
+               file_uuid,
+               os.path.splitext(original_filename)[0]
+           ]
+           
+           found_dir = None
+           for dir_name in possible_dirs:
+               check_path = os.path.join(app.config['CONVERTED_FOLDER'], 'htdemucs', dir_name)
+               if os.path.exists(check_path):
+                   found_dir = dir_name
+                   break
+
+           if not found_dir:
+               raise Exception("Output directory not found")
+           
+           # Get stem URLs
+           for source_stem, display_stem in zip(source_stems, display_stems):
+               stem_filename = f"{source_stem}.mp3"
+               full_path = os.path.join(app.config['CONVERTED_FOLDER'], 'htdemucs', found_dir, stem_filename)
+               if os.path.exists(full_path):
+                   relative_path = os.path.join('htdemucs', found_dir, stem_filename)
+                   stem_paths[display_stem] = url_for('static', filename=f'converted/{relative_path}')
+                   print(f"Generated URL for {display_stem} stem")
+
+           # Clean up input file
+           if os.path.exists(input_path):
+               os.remove(input_path)
+               print("Input file cleaned up")
+           
+           # Force garbage collection
+           gc.collect()
+           if torch.cuda.is_available():
+               torch.cuda.empty_cache()
+           
+           return jsonify({
+               'success': True,
+               'stems': stem_paths,
+               'session_id': found_dir
+           })
+           
+       except Exception as e:
+           # Clean up input file in case of error
+           if os.path.exists(input_path):
+               os.remove(input_path)
+           print(f"Separation error: {str(e)}")
+           print(f"Full error details: {traceback.format_exc()}")
+           return jsonify({
+               'success': False,
+               'error': 'Failed to process audio file. Please try again with a different file.'
+           }), 500
+
+   latest_track = Track.query.order_by(Track.date_added.desc()).first()
+   return render_template('separator.html', latest_track=latest_track)
+
 
 @app.route('/cleanup_stems/<session_id>', methods=['POST'])
 def cleanup_stems(session_id):
-    try:
-        # Update path to match actual directory structure
-        output_dir = os.path.join(app.config['CONVERTED_FOLDER'], 'htdemucs', session_id)
-        if os.path.exists(output_dir):
-            shutil.rmtree(output_dir)
-            return jsonify({'success': True})
-    except Exception as e:
-        print(f"Cleanup error: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+   try:
+       output_dir = os.path.join(app.config['CONVERTED_FOLDER'], 'htdemucs', session_id)
+       if os.path.exists(output_dir):
+           shutil.rmtree(output_dir)
+           return jsonify({'success': True})
+       return jsonify({'success': True, 'message': 'Directory already cleaned'})
+   except Exception as e:
+       print(f"Cleanup error: {str(e)}")
+       return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/guides')
 def guides():
