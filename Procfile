@@ -1,0 +1,1 @@
+web: python clearAdmin.py && python clearUsers.py && python createAdmin.py && gunicorn app:app

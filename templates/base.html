@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore hip-hop instrumentals and remixes created by Nobz.">
+    <meta name="keywords" content="Beats and Remixes">
+    <meta name="author" content="Nobz">
+    <title>Nobz-Beats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/track-display.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/audio-player.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/page-specific.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/converter.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/guides.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analyzer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/separator.css') }}">
+
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div id="global-audio-player">
+        <div class="global-player-controls">
+            <button class="global-prev-btn" title="Previous Track"></button>
+            <button class="global-play-btn" title="Play/Pause"></button>
+            <button class="global-stop-btn" title="Stop"></button>
+            <button class="global-restart-btn" title="Restart"></button>
+            <button class="global-repeat-btn" title="Repeat"></button>
+            <button class="global-next-btn" title="Next Track"></button>
+        </div>
+        
+        <div class="global-player-info">
+            <img class="track-artwork" src="" alt="" style="display: none;">
+            <div class="track-details">
+                <div class="track-name">No track selected</div>
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="time-info">
+                    <span class="current-time">0:00</span>
+                    <span class="total-time">0:00</span>
+                </div>
+            </div>
+        </div>
+    
+        <audio id="global-audio">
+            <source src="" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    
+    <!-- Three-line Menu Toggle -->
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Dropdown Menu -->
+    <div id="menuDropdown" class="menu-dropdown">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('showcase') }}">Beats and Remixes</a>
+        <a href="{{ url_for('guides') }}">Learn to make Beats</a>
+        <a href="{{ url_for('stem_separator') }}">Stem Separator</a>
+        <a href="{{ url_for('converter') }}">Audio Converter</a>
+        <a href="{{ url_for('analyze_audio') }}">Audio Analyzer</a>
+        {% if current_user.is_authenticated and current_user.is_admin %}
+            <a href="{{ url_for('admin_panel') }}">Admin Panel</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+    </div>
+
+    <!-- Flash Messages -->
+    <div class="messages">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Core Scripts -->
+    <script src="{{ url_for('static', filename='js/player.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/converter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/guides.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/analyzer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/separator.js') }}"></script>
+
+    
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

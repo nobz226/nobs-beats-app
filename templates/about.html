@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="title-container-about">
+    <img src="{{ url_for('static', filename='images/about6.png') }}" class="title-image-about">
+</div>
+
+<div class="about-container">
+    <h1>Where did I end up?...</h1>
+
+    <p>Welcome to Nobz-Beats, my beats and production tools hub. This platform combines my passion for beat-making with practical audio tools to help both creators and listeners.</p>
+
+    <h2>What you'll find on this website</h2>
+
+    <div class="feature-card">
+        <h3>Beats and Remixes</h3>
+        <p>Explore my collection of original beats and remixes. Each track represents a unique blend of styles and influences, available for streaming directly on the platform.</p>
+    </div>
+
+    <div class="feature-card">
+        <h3>Audio Tools</h3>
+        
+        <div class="tool-item">
+            <h4>Stem Separator</h4>
+            <p>Split any song into its core components. Isolate vocals from instrumentals, extract drum tracks, separate bass lines, and pull out melodies and other elements.</p>
+            <p class="section-description">Perfect for remixing, sampling, or learning how songs are constructed.</p>
+        </div>
+
+        <div class="tool-item">
+            <h4>Audio Analyzer</h4>
+            <p>Get instant insights about your music. Detect BPM (tempo) and identify musical key to help with your production workflow.</p>
+            <p class="section-description">Perfect for DJs and producers needing quick track analysis.</p>
+        </div>
+
+        <div class="tool-item">
+            <h4>Audio Converter</h4>
+            <p>Convert your audio files between popular formats: MP3, WAV, and FLAC, providing flexibility for your audio needs.</p>
+            <p class="section-description">Supporting high-quality audio conversion for your production needs.</p>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <h3>Production Resources</h3>
+        <div class="tool-item">
+            <h4>Beat-Making Guide AI</h4>
+            <p>Get assistance with music production basics, DAW usage, mixing techniques, music theory, and hip-hop beat creation. My AI friend Alex is here to guide you.</p>
+        </div>
+    </div>
+
+    <h2>Mission</h2>
+    <p>My goal is to provide both tools and inspiration for music creators while sharing my own musical journey through beats and remixes. Whether you're a beginner looking to learn production, a DJ needing quick audio tools, or just someone who loves music, I hope you find something here to help enhance your musical experience.</p>
+</div>
+{% endblock %}

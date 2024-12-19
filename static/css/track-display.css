@@ -1,0 +1,393 @@
+/* track-display.css */
+.play-track-btn,
+.track-card button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+.track-container {
+    max-height: calc(100vh - 100px);
+    max-width: 1000px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    margin: 20px auto;
+    margin-top: 20px;
+    background-color: #181818;
+    border-radius: 10px;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.track-container::after {
+    content: '';
+    display: block;
+    min-height: 120px;
+}
+
+.track-container::-webkit-scrollbar {
+    width: 8px;
+    height: max-content;
+}
+
+.track-container::-webkit-scrollbar-thumb {
+    background: rgba(245, 245, 220, 0.7);
+    border-radius: 4px;
+}
+
+.track-container::-webkit-scrollbar-thumb:hover {
+    background: #F5F5DC;
+}
+
+.track-card {
+    background-color: #1c1c1c;
+    height: 120px;
+    min-height: 120px;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.track-card:hover {
+    transform: scale(1.02);
+    border: 1px solid #fc0404;
+}
+
+.track-artwork {
+    min-width: var(--track-artwork-size);
+    width: var(--track-artwork-size);
+    height: var(--track-artwork-size);
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.track-artwork img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.track-artwork-secondary {
+    min-width: var(--track-artwork-secondary-width);
+    width: var(--track-artwork-secondary-width);
+    height: var(--track-artwork-secondary-height);
+    overflow: hidden;
+    flex-shrink: 0;
+    margin-left: -30px;
+    margin-right: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.track-artwork-secondary img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    margin-left: -40px;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.track-artwork.spinning,
+.track-artwork-secondary.spinning {
+    animation: spin 3s linear infinite;
+}
+
+.track-artwork.paused,
+.track-artwork-secondary.paused {
+    animation-play-state: paused;
+}
+
+.track-info {
+    flex-grow: 1;
+    text-align: left;
+    padding: 8px 0;
+    max-width: calc(70% - 120px);
+    color: rgba(245, 245, 220, 0.8);
+    overflow: hidden;
+    margin-left: 15px;
+}
+
+.track-info h3 {
+    font-size: 1.2rem;
+    color: #F5F5DC;
+    margin-bottom: 8px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-weight: 600;
+}
+
+.track-info p {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    opacity: 1;
+    transform: none;
+    animation: none;
+    max-height: 2.4em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    color: rgba(245, 245, 220, 0.8);
+}
+
+.track-buttons {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.play-track-btn {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    background-color: transparent !important;
+    border: 2px solid #F5F5DC !important;
+    position: relative;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.play-track-btn::before {
+    content: '';
+    position: absolute;
+    left: 55%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 12px;
+    border-color: transparent transparent transparent #F5F5DC;
+    transition: all 0.3s ease;
+}
+
+.play-track-btn.active,
+.stop-track-btn.active,
+.restart-track-btn.active {
+    opacity: 0.8;
+}
+
+.play-track-btn.playing::before {
+    left: 50%;
+    border: none;
+    width: 4px;
+    height: 14px;
+    background-color: #F5F5DC;
+    border-radius: 1px;
+    box-shadow: 6px 0 0 #F5F5DC;
+}
+
+.play-track-btn:hover {
+    border-color: #fc0404 !important;
+}
+
+.play-track-btn:hover::before {
+    border-color: transparent transparent transparent #fc0404;
+}
+
+.track-card button {
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 13px;
+    width: 70px;
+    height: 35px;
+    color: #000000;
+    background-color: #F5F5DC;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    outline: none;
+}
+
+.track-card button:hover {
+    background-color: #fc0404;
+    opacity: 1;
+}
+
+.track-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .track-container {
+        max-height: calc(100vh - 240px);
+        padding: 10px;
+        gap: 10px;
+        margin-top: 15px;
+        padding-bottom: 140px;
+    }
+
+    .track-card .track-artwork {
+        display: block !important;
+        position: static;
+        width: var(--track-artwork-size-mobile);
+        height: var(--track-artwork-size-mobile);
+        min-width: var(--track-artwork-size-mobile);
+        object-fit: cover;
+    }
+
+    .track-card .track-artwork-secondary {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        width: var(--track-artwork-secondary-mobile-size) !important;
+        height: var(--track-artwork-secondary-mobile-size) !important;
+        min-width: var(--track-artwork-secondary-mobile-size) !important;
+        margin: 0 10px;
+        object-fit: contain;
+        align-self: center;
+    }
+
+    .track-info {
+        max-width: calc(100% - var(--track-artwork-secondary-mobile-size) - 40px);
+        padding: 4px 0;
+        align-self: center;
+    }
+
+    .track-info h3 {
+        font-size: 1rem;
+        margin-bottom: 4px;
+    }
+
+    .track-info p {
+        font-size: 0.8rem;
+        -webkit-line-clamp: 2;
+    }
+
+    .track-buttons {
+        gap: 6px;
+    }
+
+    .track-buttons button {
+        width: 60px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    .play-track-btn {
+        width: 35px !important;
+        height: 35px !important;
+    }
+
+    .play-track-btn::before {
+        border-width: 6px 0 6px 9px;
+    }
+}
+
+@media (max-width: 360px) {
+    .track-container {
+        padding: 8px;
+        gap: 8px;
+    }
+
+    .track-card {
+        padding: 8px;
+    }
+
+    .track-artwork,
+    .track-artwork-secondary {
+        width: var(--track-artwork-secondary-mobile-size);
+        height: var(--track-artwork-secondary-mobile-size);
+        min-width: var(--track-artwork-secondary-mobile-size);
+    }
+
+    .track-artwork-secondary {
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+
+    .track-info {
+        max-width: calc(100% - 80px);
+    }
+
+    .play-track-btn {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    .play-track-btn::before {
+        border-width: 5px 0 5px 8px;
+    }
+}
+
+@media (hover: none) {
+    /* Remove hover effects for touch devices */
+    .track-card:hover {
+        transform: none;
+        border: none;
+    }
+
+    .play-track-btn:hover {
+        border-color: #F5F5DC !important;
+    }
+
+    .play-track-btn:hover::before {
+        border-color: transparent transparent transparent #F5F5DC;
+    }
+
+    .track-card button:hover {
+        background-color: #F5F5DC;
+        opacity: 1;
+    }
+
+    /* Add active (touch) states instead */
+    .track-card:active {
+        transform: scale(0.98);
+        border: 1px solid #fc0404;
+    }
+
+    .play-track-btn:active {
+        border-color: #fc0404 !important;
+    }
+
+    .play-track-btn:active::before {
+        border-color: transparent transparent transparent #fc0404;
+    }
+
+    .track-card button:active {
+        background-color: #fc0404;
+        opacity: 1;
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .track-card:hover {
+        transform: scale(1.02);
+        border: 1px solid #fc0404;
+    }
+
+    .play-track-btn:hover {
+        border-color: #fc0404 !important;
+    }
+
+    .play-track-btn:hover::before {
+        border-color: transparent transparent transparent #fc0404;
+    }
+
+    .track-card button:hover {
+        background-color: #fc0404;
+        opacity: 1;
+    }
+}

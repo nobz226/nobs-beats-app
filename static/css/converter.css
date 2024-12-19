@@ -1,0 +1,179 @@
+.converter-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #181818;
+    border-radius: 10px;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.converter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.file-drop-area {
+    position: relative;
+    padding: 40px;
+    border: 2px dashed rgba(245, 245, 220, 0.5);
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background-color: rgba(245, 245, 220, 0.05);
+}
+
+.file-drop-area.drag-over {
+    background-color: rgba(245, 245, 220, 0.1);
+    border-color: #F5F5DC;
+}
+
+.file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-msg {
+    color: #F5F5DC;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.file-name {
+    color: rgba(245, 245, 220, 0.8);
+    font-size: 1rem;
+}
+
+.format-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.format-selector label {
+    color: #F5F5DC;
+    font-size: 1.2rem;
+}
+
+.format-options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.format-btn {
+    padding: 10px 20px;
+    border: 2px solid rgba(245, 245, 220, 0.5);
+    background-color: transparent;
+    color: #F5F5DC;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.format-btn:hover {
+    border-color: #fc0404;
+    background-color: #fc0404;
+    opacity: 1;
+}
+
+.format-btn.selected {
+    background-color: #F5F5DC;
+    color: #000000;
+}
+
+#convert-btn {
+    padding: 15px;
+    background-color: #F5F5DC;
+    color: #000000;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#convert-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#convert-btn:not(:disabled):hover {
+    background-color: #fc0404;
+    opacity: 1;
+}
+
+.conversion-status {
+    text-align: center;
+}
+
+/* Updated progress bar styles */
+.converter-progress-container {
+    height: 4px;
+    background-color: rgba(245, 245, 220, 0.1);
+    border-radius: 2px;
+    margin: 10px 0;
+}
+
+.converter-progress {
+    height: 100%;
+    background-color: #F5F5DC;
+    width: 0;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.converter-status-text {
+    color: #F5F5DC;
+    font-size: 1rem;
+}
+
+.download-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.download-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #F5F5DC;
+    color: #000000;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+    background-color: #fc0404;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .converter-container {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .file-drop-area {
+        padding: 20px;
+    }
+
+    .file-msg {
+        font-size: 1rem;
+    }
+
+    .format-btn {
+        padding: 8px 16px;
+    }
+
+    #convert-btn {
+        padding: 12px;
+        font-size: 1rem;
+    }
+}

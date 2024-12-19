@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Replace the text title with an image -->
+<div class="title-container">
+    <img src="{{ url_for('static', filename='images/title10.png') }}" alt="Beats and Remixes" class="title-image">
+</div>
+<h2>Home made beats and remixes</h2>
+<form method="GET" action="{{ url_for('showcase') }}">
+    <div class="sort">Sort By:
+    <select name="sort" id="sort" onchange="this.form.submit()">
+        <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>A to Z</option>
+        <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Z to A</option>
+        <option value="date_asc" {% if sort_by == 'date_asc' %}selected{% endif %}>Oldest</option>
+        <option value="date_desc" {% if sort_by == 'date_desc' %}selected{% endif %}>Most Recent</option>
+        <option value="play_count" {% if sort_by == 'play_count' %}selected{% endif %}>Most Played</option>
+    </select>
+</div>
+</form>
+<!-- Track List -->
+<div class="track-container">
+    {% for track in tracks %}
+    <div class="track-card">
+        <!-- Track Artwork -->
+        <div class="track-artwork">
+            <img src="{{ url_for('static', filename='uploads/' + (track.artwork or 'No Artwork')) }}" alt="Artwork">
+        </div>
+        
+        {% if track.artwork_secondary and track.artwork_secondary != "No Secondary Artwork" %}
+            <div class="track-artwork-secondary">
+                <img src="{{ url_for('static', filename='uploads/' + track.artwork_secondary) }}" alt="Secondary Artwork">
+            </div>
+        {% else %}
+            <!-- Track Information -->
+            <div class="track-info">
+                <h3>{{ track.name }}</h3>
+                <p>{{ track.description }}</p>
+            </div>
+        {% endif %}
+
+        <!-- Track Buttons -->
+        <div class="track-buttons">
+            <button class="play-track-btn" 
+                data-track-url="{{ url_for('static', filename='uploads/' + track.file) }}" 
+                data-track-name="{{ track.name }}" 
+                data-track-artwork="{{ url_for('static', filename='uploads/' + track.artwork) }}"
+                data-track-artwork-secondary="{{ url_for('static', filename='uploads/' + track.artwork_secondary) if track.artwork_secondary and track.artwork_secondary != 'No Secondary Artwork' else '' }}">
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

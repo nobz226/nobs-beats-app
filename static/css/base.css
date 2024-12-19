@@ -1,0 +1,166 @@
+/* Root Variables */
+:root {
+    /* Global Player Artwork Sizes */
+    --global-artwork-size: 80px;
+    --global-artwork-size-mobile: 60px;
+    
+    /* Track Card Artwork Sizes */
+    --track-artwork-size: 100px;
+    --track-artwork-secondary-width: 350px;
+    --track-artwork-secondary-height: 80px;
+    
+    /* Admin Panel Artwork Sizes */
+    --admin-artwork-size: 40px;
+    
+    /* Mobile Sizes */
+    --track-artwork-size-mobile: 80px;
+    --track-artwork-secondary-mobile-size: 150px;  /* Single variable for mobile secondary artwork */
+}
+
+/* Reset and Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Font Face */
+@font-face {
+    font-family: 'Agave';
+    src: url('../fonts/Agave.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* This helps with font loading */
+}
+
+/* Body and Main Layout */
+body {
+    font-family: 'Agave', sans-serif;
+    font-size: 50px;
+    background-image: url('/static/images/bg3.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #F5F5DC;
+    line-height: 1.6;
+    background-color: #000000;
+    scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 50px;
+}
+
+/* Typography */
+h1, h2 {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 4s forwards;
+}
+
+p {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 4s forwards;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #F5F5DC;
+    animation-delay: 0.3s;
+}
+
+h2 {
+    font-size: 1rem;
+    margin-bottom: 40px;
+    margin-top: -80px;
+    font-weight: bold;
+    color: #F5F5DC;
+    animation-delay: 0.3s;
+}
+
+p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: rgba(245, 245, 220, 0.8);
+    animation-delay: 0.3s;
+}
+
+a {
+    color: #F5F5DC;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #fc0404;
+    opacity: 1;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Messages */
+.messages {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1001;
+    font-size: 20px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.messages ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.messages li {
+    background-color: rgba(18, 18, 18, 0.95);
+    color: #F5F5DC;
+    padding: 10px 20px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Base Media Queries */
+@media (max-width: 768px) {
+    body {
+        font-size: 16px;
+    }
+
+    main {
+        padding: 20px 10px;
+    }
+
+    .messages {
+        max-width: 90%;
+        font-size: 14px;
+        bottom: 130px; /* Above player */
+    }
+}

@@ -1,0 +1,159 @@
+/* Save this as static/css/separator.css */
+.separator-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #181818;
+    border-radius: 10px;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.separator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.file-drop-area {
+    position: relative;
+    padding: 40px;
+    border: 2px dashed rgba(245, 245, 220, 0.5);
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background-color: rgba(245, 245, 220, 0.05);
+}
+
+.file-drop-area.drag-over {
+    background-color: rgba(245, 245, 220, 0.1);
+    border-color: #F5F5DC;
+}
+
+.file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-msg {
+    color: #F5F5DC;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.file-name {
+    color: rgba(245, 245, 220, 0.8);
+    font-size: 1rem;
+}
+
+#separate-btn {
+    padding: 15px;
+    background-color: #F5F5DC;
+    color: #000000;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#separate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#separate-btn:not(:disabled):hover {
+    background-color: #fc0404;
+    opacity: 1;
+}
+
+.separator-progress-container {
+    height: 4px;
+    background-color: rgba(245, 245, 220, 0.1);
+    border-radius: 2px;
+    margin: 10px 0;
+}
+
+.separator-progress {
+    height: 100%;
+    background-color: #F5F5DC;
+    width: 0;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.separator-status-text {
+    color: #F5F5DC;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.stems-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.stem-card {
+    background-color: #1c1c1c;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.stem-card h3 {
+    color: #F5F5DC;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.stem-card audio {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.download-btn {
+    padding: 8px 16px;
+    background-color: #F5F5DC;
+    color: #000000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.download-btn:hover {
+    background-color: #fc0404;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .separator-container {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .stems-section {
+        grid-template-columns: 1fr;
+    }
+
+    .stem-card {
+        padding: 15px;
+    }
+
+    .file-msg {
+        font-size: 1rem;
+    }
+
+    #separate-btn {
+        padding: 12px;
+        font-size: 1rem;
+    }
+}

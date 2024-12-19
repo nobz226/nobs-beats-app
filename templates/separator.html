@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="title-container">
+    <img src="{{ url_for('static', filename='images/separator.png') }}" class="title-image" alt="Stem Separator">
+</div>
+
+<h2>Extract Vocals, Drums, Bass and Other Instruments</h2>
+
+<div class="separator-container">
+    <div class="separator-form">
+        <div class="file-drop-area">
+            <input type="file" id="audio-file" accept=".mp3,.wav,.m4a,.flac" class="file-input">
+            <div class="file-msg">Drag & drop audio file or click to select</div>
+            <div class="file-name"></div>
+        </div>
+
+        <button id="separate-btn" disabled>Separate Stems</button>
+
+        <div class="separation-status" style="display: none;">
+            <div class="separator-progress-container">
+                <div class="separator-progress"></div>
+            </div>
+            <div class="separator-status-text"></div>
+        </div>
+
+        <div class="stems-section" style="display: none;">
+            <div class="stem-card" data-stem="drums">
+                <h3>Drums</h3>
+                <button class="download-btn">Download</button>
+                <audio controls>
+                    <source src="" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <div class="stem-card" data-stem="bass">
+                <h3>Bass</h3>
+                <button class="download-btn">Download</button>
+                <audio controls>
+                    <source src="" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <div class="stem-card" data-stem="vocals">
+                <h3>Vocals</h3>
+                <button class="download-btn">Download</button>
+                <audio controls>
+                    <source src="" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <div class="stem-card" data-stem="other">
+                <h3>Melody</h3>
+                <button class="download-btn">Download</button>
+                <audio controls>
+                    <source src="" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+</div>
+
+{% endblock %}

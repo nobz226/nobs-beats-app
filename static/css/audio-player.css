@@ -1,0 +1,513 @@
+/* Global Audio Player */
+.global-prev-btn,
+.global-next-btn,
+.global-play-btn,
+.global-stop-btn,
+.global-restart-btn,
+.global-repeat-btn {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    outline: none;
+}
+
+#global-audio-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 100px;
+    width: 100%;
+    background-color: rgba(18, 18, 18, 0.95);
+    padding: 15px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Animation for spinning artwork */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.global-player-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 200px;
+}
+
+.global-player-info {
+    flex-grow: 1;
+    color: #F5F5DC;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    max-width: calc(100% - 400px);
+    min-width: 200px;
+}
+
+.global-player-info:not(.has-artwork) {
+    padding-left: 10px;
+}
+
+.track-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.global-player-info .track-artwork {
+    width: var(--global-artwork-size);
+    height: var(--global-artwork-size);
+    object-fit: contain;
+    border-radius: 50%;
+    transition: all 0.5s ease;
+}
+
+.global-player-info .track-artwork.spinning {
+    animation: spin 3s linear infinite;
+}
+
+.global-player-info .track-artwork.paused {
+    animation-play-state: paused;
+}
+
+.track-artwork.active {
+    display: block !important;
+}
+
+.global-player-info.has-artwork {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.track-name {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #F5F5DC;
+    min-height: 19px;
+}
+
+/* Progress Bar */
+.progress-container {
+    position: relative;
+    height: 4px;
+    background-color: rgba(245, 245, 220, 0.1);
+    cursor: pointer;
+    border-radius: 2px;
+    flex-grow: 1;
+    min-width: 100px;
+    margin: 10px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #F5F5DC;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+}
+
+.time-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(245, 245, 220, 0.8);
+    min-width: 100px;
+}
+
+/* Player Control Buttons */
+.global-prev-btn,
+.global-next-btn,
+.global-play-btn,
+.global-stop-btn,
+.global-restart-btn,
+.global-repeat-btn {
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 50% !important;
+    background-color: transparent !important;
+    border: 2px solid #F5F5DC !important;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Play Button */
+.global-play-btn::before {
+    content: '';
+    position: absolute;
+    left: 55%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 12px;
+    border-color: transparent transparent transparent #F5F5DC;
+    transition: all 0.3s ease;
+}
+
+/* Play button playing state */
+.global-play-btn.playing::before {
+    left: 50%;
+    border: none;
+    width: 4px;
+    height: 14px;
+    background-color: #F5F5DC;
+    border-radius: 1px;
+    box-shadow: 6px 0 0 #F5F5DC;
+}
+
+/* Stop Button */
+.global-stop-btn::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background-color: #F5F5DC;
+    transition: all 0.3s ease;
+}
+
+/* Previous Button */
+.global-prev-btn::before {
+    content: '';
+    position: absolute;
+    left: 52%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 12px 8px 0;
+    border-color: transparent #F5F5DC transparent transparent;
+    transition: all 0.3s ease;
+}
+
+/* Next Button */
+.global-next-btn::before {
+    content: '';
+    position: absolute;
+    left: 54%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 12px;
+    border-color: transparent transparent transparent #F5F5DC;
+    transition: all 0.3s ease;
+}
+
+/* Restart Button */
+.global-restart-btn::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    border: 2px solid #F5F5DC;
+    border-right: none;
+    border-radius: 50% 0 0 50%;
+    transition: all 0.3s ease;
+}
+
+.global-restart-btn::after {
+    content: '';
+    position: absolute;
+    right: 45%;
+    top: 35%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 0 5px 6px;
+    border-color: transparent transparent transparent #F5F5DC;
+    transform: rotate(-45deg);
+    transition: all 0.3s ease;
+}
+
+/* Repeat Button */
+.global-repeat-btn::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #F5F5DC;
+    border-top: none;
+    border-radius: 0 0 50% 50%;
+    transition: all 0.3s ease;
+}
+
+.global-repeat-btn::after {
+    content: '';
+    position: absolute;
+    right: 40%;
+    top: 35%;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 0 5px 6px;
+    border-color: transparent transparent transparent #F5F5DC;
+    transform: rotate(-45deg);
+    transition: all 0.3s ease;
+}
+
+/* Button States */
+.global-repeat-btn.active {
+    opacity: 1;
+}
+
+.global-repeat-btn:not(.active) {
+    opacity: 0.5;
+}
+
+/* Hover States */
+.global-prev-btn:hover,
+.global-next-btn:hover,
+.global-play-btn:hover,
+.global-stop-btn:hover,
+.global-restart-btn:hover,
+.global-repeat-btn:hover {
+    border-color: #fc0404 !important;
+    opacity: 1;
+}
+
+.global-prev-btn:hover::before {
+    border-color: transparent #fc0404 transparent transparent;
+}
+
+.global-next-btn:hover::before,
+.global-play-btn:hover::before {
+    border-color: transparent transparent transparent #fc0404;
+}
+
+.global-stop-btn:hover::before {
+    background-color: #fc0404;
+}
+
+.global-restart-btn:hover::before {
+    border-color: #fc0404;
+}
+
+.global-restart-btn:hover::after {
+    border-color: transparent transparent transparent #fc0404;
+}
+
+.global-repeat-btn:hover::before {
+    border-color: #fc0404;
+    border-top: none;
+}
+
+.global-repeat-btn:hover::after {
+    border-color: transparent transparent transparent #fc0404;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    #global-audio-player {
+        height: 100px;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .global-player-info {
+        position: relative;
+        padding: 10px;
+    }
+
+    .track-name {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        font-size: 12px;
+        max-width: 200px;
+    }
+
+    .track-artwork {
+        position: absolute;
+        left: -85px;
+        width: var(--global-artwork-size-mobile);
+        height: var(--global-artwork-size-mobile);
+        min-width: var(--global-artwork-size-mobile);
+        top: 10px;
+        object-fit: fill;
+    }
+
+    .progress-container {
+        position: absolute;
+        top: 25px;
+        left: 20px;
+        right: -65px;
+        height: 3px;
+    }
+
+    .time-info {
+        position: absolute;
+        top: 40px;
+        left: 20px;
+        right: -65px;
+        font-size: 10px;
+    }
+
+    .global-player-controls {
+        position: absolute;
+        bottom: 10px;
+        left: 45px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        padding: 0 10px;
+        pointer-events: auto;
+        z-index: 1001;
+    }
+
+    .global-prev-btn,
+    .global-next-btn,
+    .global-play-btn,
+    .global-stop-btn,
+    .global-restart-btn,
+    .global-repeat-btn {
+        width: 30px !important;
+        height: 30px !important;
+        position: relative;
+        z-index: 1002;
+        pointer-events: auto;
+    }
+}
+
+@media (max-width: 360px) {
+    #global-audio-player {
+        height: 90px;
+    }
+
+    .track-name {
+        left: 80px;
+        max-width: 160px;
+    }
+
+    .progress-container,
+    .time-info {
+        left: 80px;
+    }
+
+    .global-player-controls {
+        gap: 10px;
+    }
+
+    .global-prev-btn,
+    .global-next-btn,
+    .global-play-btn,
+    .global-stop-btn,
+    .global-restart-btn,
+    .global-repeat-btn {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .track-artwork {
+        width: var(--global-artwork-size-mobile);
+        height: var(--global-artwork-size-mobile);
+    }
+}
+
+@media (hover: none) {
+    /* Remove hover effects for touch devices */
+    .global-prev-btn:hover,
+    .global-next-btn:hover,
+    .global-play-btn:hover,
+    .global-stop-btn:hover,
+    .global-restart-btn:hover,
+    .global-repeat-btn:hover {
+        border-color: #F5F5DC !important;
+    }
+
+    .global-prev-btn:hover::before {
+        border-color: transparent #F5F5DC transparent transparent;
+    }
+
+    .global-next-btn:hover::before,
+    .global-play-btn:hover::before {
+        border-color: transparent transparent transparent #F5F5DC;
+    }
+
+    .global-stop-btn:hover::before {
+        background-color: #F5F5DC;
+    }
+
+    .global-restart-btn:hover::before {
+        border-color: #F5F5DC;
+    }
+
+    .global-restart-btn:hover::after {
+        border-color: transparent transparent transparent #F5F5DC;
+    }
+
+    .global-repeat-btn:hover::before {
+        border-color: #F5F5DC;
+        border-top: none;
+    }
+
+    .global-repeat-btn:hover::after {
+        border-color: transparent transparent transparent #F5F5DC;
+    }
+
+    /* Active (touch) states */
+    .global-prev-btn:active,
+    .global-next-btn:active,
+    .global-play-btn:active,
+    .global-stop-btn:active,
+    .global-restart-btn:active,
+    .global-repeat-btn:active {
+        border-color: #fc0404 !important;
+        opacity: 1;
+    }
+
+    .global-prev-btn:active::before {
+        border-color: transparent #fc0404 transparent transparent;
+    }
+
+    .global-next-btn:active::before,
+    .global-play-btn:active::before {
+        border-color: transparent transparent transparent #fc0404;
+    }
+
+    .global-stop-btn:active::before {
+        background-color: #fc0404;
+    }
+
+    .global-restart-btn:active::before {
+        border-color: #fc0404;
+    }
+
+    .global-restart-btn:active::after {
+        border-color: transparent transparent transparent #fc0404;
+    }
+
+    .global-repeat-btn:active::before {
+        border-color: #fc0404;
+        border-top: none;
+    }
+
+    .global-repeat-btn:active::after {
+        border-color: transparent transparent transparent #fc0404;
+    }
+}

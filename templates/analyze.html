@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="title-container">
+    <img src="{{ url_for('static', filename='images/analyzer.png') }}" class="title-image" alt="Audio Analyzer">
+</div>
+
+<h2>Analyze Tempo and Key (Tempo detection is aproximate and in some cases it might display double time)</h2>
+<div class="analyzer-container">
+    <div class="analyzer-form">
+        <div class="file-drop-area">
+            <input type="file" id="audio-file" accept=".mid,.midi,.xml,.mxl,.abc,.wav,.mp3" class="file-input">
+            <div class="file-msg">Drag & drop audio file or click to select</div>
+            <div class="file-name"></div>
+        </div>
+
+        <button id="analyze-btn" disabled>Analyze</button>
+
+        <div class="analysis-status" style="display: none;">
+            <div class="analyzer-progress-container">
+                <div class="analyzer-progress"></div>
+            </div>
+            <div class="analyzer-status-text"></div>
+        </div>
+
+        <div class="results-section" style="display: none;">
+            <div class="result-card tempo-result">
+                <h3>Tempo</h3>
+                <div class="result-value tempo-value">-- BPM</div>
+            </div>
+            <div class="result-card key-result">
+                <h3>Key</h3>
+                <div class="result-value key-value">--</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

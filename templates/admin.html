@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="admin-page">
+    <div class="title-container">
+        <img class="admin-title-image" src="{{ url_for('static', filename='images/admin3.png') }}" alt="Admin">
+    </div>
+
+    <div class="admin-container">
+        <div class="track-management">
+            <h4>Track Management</h4>
+            <div class="track-actions">
+                <button onclick="selectAllTracks()">Select All</button>
+                <button onclick="downloadSelected()">Download Selected</button>
+                <button onclick="deleteSelected()">Delete Selected</button>
+                <button onclick="editSelected()">Edit</button>
+            </div>
+
+            <div class="admin-track-list">
+                {% for track in tracks %}
+                <div class="admin-track-item" data-track-id="{{ track.id }}" data-track-name="{{ track.name }}" data-track-description="{{ track.description }}">
+                    <div class="track-select">
+                        <input type="checkbox" class="track-checkbox">
+                    </div>
+                    <div class="admin-track-artwork-small">
+                        <img src="{{ url_for('static', filename='uploads/' + (track.artwork or 'No Artwork')) }}" alt="Track Artwork">
+                    </div>
+                    <div class="admin-track-artwork-secondary-small">
+                        <img src="{{ url_for('static', filename='uploads/' + (track.artwork_secondary or 'No Secondary Artwork')) }}" alt="Secondary Artwork">
+                    </div>
+                    <div class="track-title">{{ track.name }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="forms-section">
+            <div class="admin-form">
+                <h4>Add New Track</h4>
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.name.label }}
+                        {{ form.name(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.description.label }}
+                        {{ form.description(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.file.label }}
+                        {{ form.file(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.artwork.label }}
+                        {{ form.artwork(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.artwork_secondary.label }}
+                        {{ form.artwork_secondary(class="form-control") }}
+                    </div>
+                    <button type="submit" name="action" value="add">Add Track</button>
+                </form>
+            </div>
+        
+            <div id="edit-form" class="admin-form">
+                <h4>Edit Track</h4>
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" id="edit-track-id" name="track_id">
+                    <div class="form-group">
+                        <label for="edit-name">Track Name:</label>
+                        <input type="text" id="edit-name" name="name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-description">Description:</label>
+                        <textarea id="edit-description" name="description" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-file">Audio File: (Leave empty to keep current)</label>
+                        <input type="file" id="edit-file" name="file" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-artwork">Primary Artwork: (Leave empty to keep current)</label>
+                        <input type="file" id="edit-artwork" name="artwork" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-artwork-secondary">Secondary Artwork: (Leave empty to keep current)</label>
+                        <input type="file" id="edit-artwork-secondary" name="artwork_secondary" class="form-control">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" name="action" value="update">Update Track</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
