@@ -33,6 +33,23 @@
     font-display: swap; /* This helps with font loading */
 }
 
+@font-face {
+    font-family: 'AnotherTag';
+    src: url('../fonts/AnotherTag.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* This helps with font loading */
+}
+
+@font-face {
+    font-family: 'FatVandals';
+    src: url('../fonts/FatVandals.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap; /* This helps with font loading */
+}
+
+
 /* Body and Main Layout */
 body {
     font-family: 'Agave', sans-serif;

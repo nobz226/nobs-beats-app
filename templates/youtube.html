@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="title-container">
+    <img src="{{ url_for('static', filename='images/youtube.png') }}" class="title-image" alt="YouTube to Audio">
+</div>
+
+<h2>Convert YouTube Videos to Audio Files</h2>
+
+<div class="youtube-container">
+    <div class="youtube-form">
+        <!-- URL Input Section -->
+        <div class="url-input-section">
+            <input type="text" id="youtube-url" placeholder="Enter YouTube video or playlist URL" class="url-input">
+            <button id="fetch-btn" class="fetch-button">Fetch Video(s)</button>
+        </div>
+
+        <!-- Format Selection -->
+        <div class="format-selector">
+            <label>Convert to:</label>
+            <div class="format-options">
+                <button class="format-btn" data-format="mp3">MP3</button>
+                <button class="format-btn" data-format="wav">WAV</button>
+                <button class="format-btn" data-format="flac">FLAC</button>
+            </div>
+        </div>
+
+        <!-- Video List Section -->
+        <div class="video-list" style="display: none;">
+            <div class="select-all-container">
+                <label>
+                    <input type="checkbox" id="select-all">
+                    Select All
+                </label>
+                <span class="selected-count">0 selected</span>
+            </div>
+            
+            <div class="video-items">
+                <!-- Videos will be populated here -->
+            </div>
+        </div>
+
+        <!-- Conversion Controls -->
+        <div class="conversion-controls" style="display: none;">
+            <button id="convert-btn" disabled>Convert Selected</button>
+        </div>
+
+        <!-- Status Section -->
+        <div class="conversion-status" style="display: none;">
+            <div class="youtube-progress-container">
+                <div class="youtube-progress-bar"></div>
+            </div>
+            <div class="youtube-status-text"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

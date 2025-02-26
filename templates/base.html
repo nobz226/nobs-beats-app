@@ -15,8 +15,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/page-specific.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/converter.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/guides.css') }}">
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/analyzer.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/separator.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analyzer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/separator.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/youtube.css') }}">
 
 
     {% block extra_css %}{% endblock %}
@@ -66,9 +67,10 @@
         <a href="{{ url_for('about') }}">About</a>
         <a href="{{ url_for('showcase') }}">Beats and Remixes</a>
         <a href="{{ url_for('guides') }}">Learn to make Beats</a>
-        <!-- <a href="{{ url_for('stem_separator') }}">Stem Separator</a> -->
+        <a href="{{ url_for('stem_separator') }}">Stem Separator</a>
         <a href="{{ url_for('converter') }}">Audio Converter</a>
-        <!-- <a href="{{ url_for('analyze_audio') }}">Audio Analyzer</a> -->
+        <a href="{{ url_for('analyze_audio') }}">Audio Analyzer</a>
+        <a href="{{ url_for('youtube_converter') }}">Youtube to Audio</a>
         {% if current_user.is_authenticated and current_user.is_admin %}
             <a href="{{ url_for('admin_panel') }}">Admin Panel</a>
             <a href="{{ url_for('logout') }}">Logout</a>
@@ -99,8 +101,9 @@
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
     <script src="{{ url_for('static', filename='js/converter.js') }}"></script>
     <script src="{{ url_for('static', filename='js/guides.js') }}"></script>
-    <!-- <script src="{{ url_for('static', filename='js/analyzer.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/separator.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/analyzer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/separator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/youtube.js') }}"></script>
 
     
 

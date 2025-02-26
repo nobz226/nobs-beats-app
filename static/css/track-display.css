@@ -116,18 +116,19 @@
 }
 
 .track-info {
+    font-family: 'Agave';
     flex-grow: 1;
     text-align: left;
     padding: 8px 0;
     max-width: calc(70% - 120px);
-    color: rgba(245, 245, 220, 0.8);
+    color: rgba(16, 16, 11, 0.8);
     overflow: hidden;
     margin-left: 15px;
 }
 
 .track-info h3 {
     font-size: 1.2rem;
-    color: #F5F5DC;
+    color: #f6f0dc;
     margin-bottom: 8px;
     text-overflow: ellipsis;
     white-space: nowrap;
