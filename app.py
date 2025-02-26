@@ -28,12 +28,11 @@ from demucs.pretrained import get_model
 from demucs.apply import apply_model
 import torchaudio
 import warnings
-warnings.filterwarnings("ignore")
-ssl._create_default_https_context = ssl._create_unverified_context
 import traceback
 import demucs.separate
 
-
+warnings.filterwarnings("ignore")
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 load_dotenv()
