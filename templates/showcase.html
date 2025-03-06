@@ -44,9 +44,148 @@
                 data-track-name="{{ track.name }}" 
                 data-track-artwork="{{ url_for('static', filename='uploads/' + track.artwork) }}"
                 data-track-artwork-secondary="{{ url_for('static', filename='uploads/' + track.artwork_secondary) if track.artwork_secondary and track.artwork_secondary != 'No Secondary Artwork' else '' }}">
+                <i class="fas fa-play"></i>
             </button>
         </div>
     </div>
     {% endfor %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Showcase page loaded");
+        
+        // Debug check for audio player
+        const audioPlayer = document.getElementById('global-audio-player');
+        console.log("Audio player element:", audioPlayer);
+        
+        // Force grid layout on track cards
+        function enforceGridLayout() {
+            const trackCards = document.querySelectorAll('.track-card');
+            
+            trackCards.forEach(card => {
+                // Force grid layout
+                card.style.display = 'grid';
+                card.style.gridTemplateColumns = 'auto 1fr auto';
+                card.style.gridTemplateAreas = '"artwork info buttons"';
+                card.style.alignItems = 'center';
+                card.style.gap = '20px';
+                
+                // Set artwork area
+                const artwork = card.querySelector('.track-artwork');
+                if (artwork) {
+                    artwork.style.gridArea = 'artwork';
+                    
+                    // Ensure animation classes work
+                    if (artwork.classList.contains('spinning')) {
+                        artwork.style.animation = 'spin 3s linear infinite';
+                    }
+                    if (artwork.classList.contains('paused')) {
+                        artwork.style.animationPlayState = 'paused';
+                    }
+                }
+                
+                // Set info area
+                const info = card.querySelector('.track-info');
+                if (info) {
+                    info.style.gridArea = 'info';
+                    info.style.display = 'block';
+                }
+                
+                // Set secondary artwork area
+                const secondaryArtwork = card.querySelector('.track-artwork-secondary');
+                if (secondaryArtwork) {
+                    secondaryArtwork.style.gridArea = 'info';
+                    
+                    // Ensure animation classes work
+                    if (secondaryArtwork.classList.contains('spinning')) {
+                        secondaryArtwork.style.animation = 'spin 3s linear infinite';
+                    }
+                    if (secondaryArtwork.classList.contains('paused')) {
+                        secondaryArtwork.style.animationPlayState = 'paused';
+                    }
+                }
+                
+                // Set buttons area
+                const buttons = card.querySelector('.track-buttons');
+                if (buttons) {
+                    buttons.style.gridArea = 'buttons';
+                    buttons.style.justifySelf = 'end';
+                }
+            });
+        }
+        
+        // Run on load and on resize
+        enforceGridLayout();
+        window.addEventListener('resize', enforceGridLayout);
+        
+        // Add animation to track cards
+        const trackCards = document.querySelectorAll('.track-card');
+        trackCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+        
+        // Update play buttons to show correct icon
+        const updatePlayButtons = () => {
+            const globalAudio = document.getElementById('global-audio');
+            const playButtons = document.querySelectorAll('.play-track-btn');
+            
+            playButtons.forEach((button) => {
+                const isPlaying = !globalAudio.paused && globalAudio.src === button.dataset.trackUrl;
+                
+                // Clear existing content
+                button.innerHTML = '';
+                
+                // Create icon element
+                const icon = document.createElement('i');
+                icon.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
+                button.appendChild(icon);
+                
+                // Add playing class if this track is currently playing
+                if (isPlaying) {
+                    button.classList.add('playing');
+                } else {
+                    button.classList.remove('playing');
+                }
+            });
+        };
+        
+        // Listen for play/pause events on the global audio player
+        const globalAudio = document.getElementById('global-audio');
+        globalAudio.addEventListener('play', updatePlayButtons);
+        globalAudio.addEventListener('pause', updatePlayButtons);
+        
+        // Initial update
+        updatePlayButtons();
+        
+        // Ensure the player is visible when a track is clicked
+        const playButtons = document.querySelectorAll('.play-track-btn');
+        playButtons.forEach((button) => {
+            button.addEventListener('click', function() {
+                console.log("Play button clicked");
+                // Make sure the global audio player is visible
+                const audioPlayer = document.getElementById('global-audio-player');
+                audioPlayer.classList.add('active');
+                console.log("Added active class to audio player");
+                
+                // Double check after a short delay
+                setTimeout(function() {
+                    if (!audioPlayer.classList.contains('active')) {
+                        audioPlayer.classList.add('active');
+                        console.log("Re-added active class to audio player");
+                    }
+                }, 500);
+            });
+        });
+    });
+</script>
 {% endblock %}

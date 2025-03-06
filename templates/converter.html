@@ -9,8 +9,16 @@
 
 <div class="converter-container">
     <div class="converter-form">
+        <div class="notice">
+            <i class="fas fa-info-circle"></i>
+            For best results, use audio files under 50MB
+        </div>
+        
         <div class="file-drop-area">
             <input type="file" id="audio-file" accept=".mp3,.wav,.flac" class="file-input">
+            <div class="file-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
             <div class="file-msg">Drag & drop audio file or click to select</div>
             <div class="file-name"></div>
         </div>
@@ -24,7 +32,10 @@
             </div>
         </div>
 
-        <button id="convert-btn" disabled>Convert</button>
+        <button id="convert-btn" disabled>
+            <span class="btn-text">Convert</span>
+            <i class="fas fa-exchange-alt"></i>
+        </button>
 
         <div class="conversion-status" style="display: none;">
             <div class="converter-progress-container">
@@ -34,7 +45,10 @@
         </div>
 
         <div class="download-section" style="display: none;">
-            <a href="#" class="download-btn">Download Converted File</a>
+            <a href="#" class="download-btn">
+                <i class="fas fa-download"></i>
+                <span>Download Converted File</span>
+            </a>
         </div>
     </div>
 </div>

@@ -2,10 +2,834 @@
 
 {% block content %}
 <div class="home-content">
+    <!-- Hero Section with Background -->
+    <div class="hero-section">
     <div class="title-container">
-        <h1 class="text-title"><span class="word">Nobz</span> <span class="word">Beats</span></h1>
+            <h1 class="text-title"><span class="word">Nobz</span> <span class="word">Beats</span></h1>
+            <p class="tagline">Elevate Your Sound</p>
+        </div>
     </div>
-    <h2>Nobz 2024</h2>
-    <h2>Beats, Remixes and Audio Tools</h2>
+    
+    <!-- Latest Beats Section - Now before Production Tools -->
+    <div class="latest-section">
+        <div class="latest-content">
+            <div class="vinyl-wrapper">
+                <img src="{{ url_for('static', filename='images/vinyl4.png') }}" alt="Vinyl Record" class="vinyl-image">
+            </div>
+            <div class="latest-text">
+                <h2 class="section-title">Latest Beats</h2>
+                <p class="section-description">Check out the newest productions and remixes from Nobz. Fresh beats and innovative sounds to inspire your next project.</p>
+                <a href="{{ url_for('showcase') }}" class="cta-button">Browse All Beats</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Features Section -->
+    <div class="features-section">
+        <h2 class="section-title">Music Production Tools</h2>
+        
+        <div class="carousel-container">
+            <div class="carousel-navigation">
+                <button id="prev-btn" class="carousel-btn"><i class="fas fa-chevron-left"></i></button>
+                <div class="feature-cards" id="feature-cards">
+                    <!-- All cards will be shown in the carousel -->
+                    <div class="feature-card tool-card" data-tool="separator">
+                        <div class="card-content">
+                            <div class="card-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <h3 class="tool-title"><span class="word-white">Stem</span> <span class="word-red">Separator</span></h3>
+                            <p>Split tracks into vocals, drums, bass, and melody</p>
+                            <p class="tool-description">Our AI-powered stem separation tool isolates individual components from any track. Perfect for remixing, sampling, or studying how your favorite songs are constructed.</p>
+                            <a href="{{ url_for('stem_separator') }}" class="feature-link">Try Now</a>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card tool-card" data-tool="analyzer">
+                        <div class="card-content">
+                            <div class="card-icon">
+                                <i class="fas fa-wave-square"></i>
+                            </div>
+                            <h3 class="tool-title"><span class="word-white">Audio</span> <span class="word-red">Analyzer</span></h3>
+                            <p>Detect BPM and key of any audio file</p>
+                            <p class="tool-description">Instantly identify the tempo and musical key of any track. Essential for DJs, producers creating mashups, or musicians looking to play along with recorded music.</p>
+                            <a href="{{ url_for('analyze_audio') }}" class="feature-link">Try Now</a>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card tool-card" data-tool="converter">
+                        <div class="card-content">
+                            <div class="card-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <h3 class="tool-title"><span class="word-white">Format</span> <span class="word-red">Converter</span></h3>
+                            <p>Convert between MP3, WAV, and FLAC formats</p>
+                            <p class="tool-description">Seamlessly transform your audio files between different formats while preserving quality. Choose between compressed formats for sharing or lossless formats for production.</p>
+                            <a href="{{ url_for('converter') }}" class="feature-link">Try Now</a>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card tool-card" data-tool="youtube">
+                        <div class="card-content">
+                            <div class="card-icon">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <h3 class="tool-title"><span class="word-white">YouTube</span> <span class="word-red">Downloader</span></h3>
+                            <p>Extract audio from YouTube videos and playlists</p>
+                            <p class="tool-description">Legally download audio from YouTube videos for personal use. Save your favorite music, lectures, or podcasts in high-quality audio formats for offline listening.</p>
+                            <a href="{{ url_for('youtube_converter') }}" class="feature-link">Try Now</a>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card tool-card" data-tool="guides">
+                        <div class="card-content">
+                            <div class="card-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3 class="tool-title"><span class="word-white">Production</span> <span class="word-red">Guides</span></h3>
+                            <p>Learn beatmaking with AI-powered production assistant</p>
+                            <p class="tool-description">Access interactive tutorials and AI-generated tips customized to your skill level. From basic beat construction to advanced mixing techniques, elevate your production skills.</p>
+                            <a href="{{ url_for('guides') }}" class="feature-link">Try Now</a>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card tool-card" data-tool="showcase">
+                        <div class="card-content">
+                            <div class="card-icon">
+                                <i class="fas fa-music"></i>
+                            </div>
+                            <h3 class="tool-title"><span class="word-white">Beats</span> <span class="word-red">Showcase</span></h3>
+                            <p>Browse and play all available beats and remixes</p>
+                            <p class="tool-description">Explore our complete collection of original beats, remixes, and sample packs. Listen, download, and get inspired for your next musical project or performance.</p>
+                            <a href="{{ url_for('showcase') }}" class="feature-link">Try Now</a>
+                        </div>
+                    </div>
+                </div>
+                <button id="next-btn" class="carousel-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            
+            <div class="carousel-indicators">
+                <span class="indicator active" data-index="0"></span>
+                <span class="indicator" data-index="1"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer-info">
+        <h3>Nobz 2024</h3>
+        <p>Beats, Remixes and Audio Tools</p>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .home-content {
+        padding: 0;
+        overflow-x: hidden;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        position: relative;
+        min-height: 45vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        padding: 3rem 2rem;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("{{ url_for('static', filename='images/bg3.png') }}");
+        background-size: cover;
+        background-position: center;
+        opacity: 0.2;
+        z-index: 0;
+    }
+    
+    .title-container {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .text-title {
+        margin: 20px auto 30px;
+    }
+    
+    .tagline {
+        font-family: 'Agave', monospace;
+        font-size: 1.5rem;
+        color: #fc4242;
+        margin-top: -1rem;
+        opacity: 0;
+        animation: fadeIn 2s forwards 3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* Latest Beats Section - Improved Layout */
+    .latest-section {
+        padding: 6rem 2rem;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .latest-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 1000px;
+        margin: 0 auto;
+        gap: 2rem;
+    }
+    
+    .latest-text {
+        flex: 1;
+        max-width: 500px;
+        text-align: left;
+        z-index: 2;
+    }
+    
+    .latest-text .section-title {
+        text-align: left;
+        margin-bottom: 1.5rem;
+        font-size: 2.5rem;
+    }
+    
+    .section-description {
+        color: #cccccc;
+        margin-bottom: 2rem;
+        font-size: 1.2rem;
+        line-height: 1.6;
+    }
+    
+    .cta-button {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background-color: #fc4242;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 1.1rem;
+        transition: transform 0.3s, background-color 0.3s;
+        box-shadow: 0 4px 15px rgba(252, 66, 66, 0.3);
+    }
+    
+    .cta-button:hover {
+        transform: scale(1.05);
+        background-color: #ff6b6b;
+        box-shadow: 0 6px 20px rgba(252, 66, 66, 0.4);
+    }
+    
+    .vinyl-wrapper {
+        position: relative;
+        width: 350px;
+        height: 350px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .vinyl-image {
+        width: 300px;
+        height: 300px;
+        position: relative;
+        opacity: 0.85;
+        animation: rotate 20s linear infinite;
+        filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.7));
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Features Section */
+    .features-section {
+        padding: 4rem 2rem;
+        background-color: #121212;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .features-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, rgba(252, 66, 66, 0.05) 0%, transparent 70%);
+        z-index: 0;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        font-size: 2.2rem;
+        color: #ffffff;
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #fc4242, transparent);
+        margin: 15px auto 0;
+    }
+    
+    /* Carousel Styling */
+    .carousel-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .carousel-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .carousel-btn {
+        background-color: rgba(20, 20, 20, 0.7);
+        color: #fc4242;
+        border: 2px solid #fc4242;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+        box-shadow: 0 0 15px rgba(252, 66, 66, 0.2);
+    }
+    
+    .carousel-btn:hover {
+        background-color: rgba(252, 66, 66, 0.2);
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(252, 66, 66, 0.4);
+    }
+
+    .carousel-btn:active {
+        transform: scale(0.95);
+    }
+
+    .carousel-btn i {
+        font-size: 1.2rem;
+    }
+    
+    .carousel-indicators {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-top: 2.5rem;
+    }
+    
+    .indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .indicator::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fc4242;
+        transform: scale(0);
+        transition: transform 0.3s ease;
+        border-radius: 50%;
+    }
+    
+    .indicator.active::after {
+        transform: scale(1);
+    }
+
+    .indicator:hover {
+        transform: scale(1.2);
+    }
+    
+    .feature-cards {
+        display: flex;
+        overflow: hidden;
+        scroll-behavior: smooth;
+        width: 100%;
+        max-width: 1000px;
+        gap: 2rem;
+        padding: 1.5rem 0.5rem;
+    }
+    
+    .feature-card {
+        background: rgba(30, 30, 30, 0.7);
+        border-radius: 15px;
+        width: 300px;
+        min-width: 300px;
+        text-align: center;
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        min-height: 350px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transform-origin: center bottom;
+    }
+
+    .card-content {
+        padding: 2rem 1.5rem 4rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        position: relative;
+        z-index: 2;
+    }
+
+    .card-icon {
+        font-size: 2.5rem;
+        color: #fc4242;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        opacity: 0.9;
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(252, 66, 66, 0.1) 0%, transparent 100%);
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(252, 66, 66, 0.2);
+        border: 1px solid rgba(252, 66, 66, 0.3);
+    }
+
+    .feature-card:hover::before {
+        opacity: 1;
+    }
+
+    .feature-card:hover .card-icon {
+        transform: scale(1.1) translateY(-5px);
+        color: #ff6b6b;
+        opacity: 1;
+    }
+    
+    .tool-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover .tool-title {
+        transform: translateY(-5px);
+    }
+    
+    .word-white {
+        color: #ffffff;
+    }
+    
+    .word-red {
+        color: #fc4242;
+    }
+    
+    .feature-card p {
+        color: #cccccc;
+        margin-bottom: 0.8rem;
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover p {
+        transform: translateY(-3px);
+    }
+    
+    .tool-description {
+        color: #a0a0a0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .tool-description {
+        color: #cccccc;
+    }
+    
+    .feature-link {
+        display: inline-block;
+        padding: 0.6rem 1.5rem;
+        background-color: #fc4242;
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        position: absolute;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 4px 15px rgba(252, 66, 66, 0.3);
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+    
+    .feature-link:hover {
+        background-color: #ff6b6b;
+        transform: translateX(-50%) translateY(-5px);
+        box-shadow: 0 8px 20px rgba(252, 66, 66, 0.4);
+    }
+
+    .feature-link:active {
+        transform: translateX(-50%) translateY(-2px);
+    }
+    
+    .footer-info {
+        text-align: center;
+        padding: 2rem;
+        background-color: #0a0a0a;
+    }
+    
+    .footer-info h3 {
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+    
+    .footer-info p {
+        color: #cccccc;
+    }
+    
+    /* Animation Keyframes */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(252, 66, 66, 0.4);
+        }
+        70% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 10px rgba(252, 66, 66, 0);
+        }
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(252, 66, 66, 0);
+        }
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: 40vh;
+            padding: 2rem;
+        }
+        
+        .latest-content {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .latest-text {
+            text-align: center;
+            order: 2;
+        }
+        
+        .latest-text .section-title {
+            text-align: center;
+        }
+        
+        .vinyl-wrapper {
+            width: 250px;
+            height: 250px;
+            order: 1;
+            margin-bottom: 1rem;
+        }
+        
+        .vinyl-image {
+            width: 200px;
+            height: 200px;
+        }
+        
+        .feature-cards {
+            flex-direction: row;
+            align-items: center;
+            max-width: 300px;
+            padding: 1rem 0.25rem;
+        }
+        
+        .feature-card {
+            width: 100%;
+            min-width: 100%;
+        }
+        
+        .carousel-navigation {
+            gap: 0.5rem;
+        }
+        
+        .carousel-btn {
+            width: 40px;
+            height: 40px;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .tool-title {
+            font-size: 1.8rem;
+        }
+    }
+    
+    /* Tool cards are all visible by default in the carousel */
+    .tool-card {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add parallax effect to hero section
+        const heroSection = document.querySelector('.hero-section');
+        
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.scrollY;
+            if (scrollPosition < window.innerHeight) {
+                heroSection.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
+            }
+        });
+        
+        // Carousel functionality
+        const cardsContainer = document.getElementById('feature-cards');
+        const cards = document.querySelectorAll('.tool-card');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const indicators = document.querySelectorAll('.indicator');
+        
+        let currentIndex = 0;
+        let cardsPerView = window.innerWidth <= 768 ? 1 : 3;
+        const maxIndex = Math.ceil(cards.length / cardsPerView) - 1;
+        
+        // Add entrance animations to cards
+        cards.forEach((card, index) => {
+            card.style.animation = `fadeInUp 0.6s ease forwards ${0.1 + index * 0.1}s`;
+            card.style.opacity = '0';
+        });
+        
+        // Function to update carousel position with enhanced animation
+        function updateCarousel(animate = true) {
+            const cardWidth = cards[0].offsetWidth;
+            const gap = parseInt(window.getComputedStyle(cardsContainer).columnGap);
+            const scrollAmount = currentIndex * (cardWidth * cardsPerView + gap * (cardsPerView - 1));
+            
+            if (animate) {
+                // Add a class for smooth transition
+                cardsContainer.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            } else {
+                cardsContainer.style.transition = 'none';
+            }
+            
+            cardsContainer.style.transform = `translateX(-${scrollAmount}px)`;
+            
+            // Update indicators with animation
+            indicators.forEach((indicator, index) => {
+                if (index === currentIndex) {
+                    indicator.classList.add('active');
+                    indicator.style.animation = 'pulse 1s';
+                } else {
+                    indicator.classList.remove('active');
+                    indicator.style.animation = 'none';
+                }
+            });
+            
+            // Update button states
+            prevBtn.disabled = currentIndex === 0;
+            prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
+            nextBtn.disabled = currentIndex === maxIndex;
+            nextBtn.style.opacity = currentIndex === maxIndex ? '0.5' : '1';
+        }
+        
+        // Event listeners for navigation buttons with enhanced feedback
+        prevBtn.addEventListener('click', function() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCarousel();
+                
+                // Add button press animation
+                this.classList.add('btn-pressed');
+                setTimeout(() => this.classList.remove('btn-pressed'), 300);
+            }
+        });
+        
+        nextBtn.addEventListener('click', function() {
+            if (currentIndex < maxIndex) {
+                currentIndex++;
+                updateCarousel();
+                
+                // Add button press animation
+                this.classList.add('btn-pressed');
+                setTimeout(() => this.classList.remove('btn-pressed'), 300);
+            }
+        });
+        
+        // Event listeners for indicators with enhanced feedback
+        indicators.forEach(indicator => {
+            indicator.addEventListener('click', function() {
+                const newIndex = parseInt(this.getAttribute('data-index'));
+                if (newIndex !== currentIndex) {
+                    currentIndex = newIndex;
+                    updateCarousel();
+                    
+                    // Add indicator press animation
+                    this.style.animation = 'pulse 1s';
+                }
+            });
+        });
+        
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                currentIndex--;
+                updateCarousel();
+                prevBtn.classList.add('btn-pressed');
+                setTimeout(() => prevBtn.classList.remove('btn-pressed'), 300);
+            } else if (e.key === 'ArrowRight' && currentIndex < maxIndex) {
+                currentIndex++;
+                updateCarousel();
+                nextBtn.classList.add('btn-pressed');
+                setTimeout(() => nextBtn.classList.remove('btn-pressed'), 300);
+            }
+        });
+        
+        // Handle window resize with improved responsiveness
+        window.addEventListener('resize', function() {
+            const newCardsPerView = window.innerWidth <= 768 ? 1 : 3;
+            
+            if (newCardsPerView !== cardsPerView) {
+                cardsPerView = newCardsPerView;
+                const newMaxIndex = Math.ceil(cards.length / cardsPerView) - 1;
+                
+                // Update indicators based on new max index
+                const indicatorsContainer = document.querySelector('.carousel-indicators');
+                indicatorsContainer.innerHTML = '';
+                
+                for (let i = 0; i <= newMaxIndex; i++) {
+                    const indicator = document.createElement('span');
+                    indicator.className = i === currentIndex ? 'indicator active' : 'indicator';
+                    indicator.setAttribute('data-index', i);
+                    indicator.addEventListener('click', function() {
+                        currentIndex = parseInt(this.getAttribute('data-index'));
+                        updateCarousel();
+                    });
+                    indicatorsContainer.appendChild(indicator);
+                }
+                
+                // Adjust current index if needed
+                if (currentIndex > newMaxIndex) {
+                    currentIndex = newMaxIndex;
+                }
+                
+                // Update carousel without animation
+                updateCarousel(false);
+            } else {
+                // Just update the carousel position
+                updateCarousel(false);
+            }
+        });
+        
+        // Add touch swipe support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        cardsContainer.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        cardsContainer.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold && currentIndex < maxIndex) {
+                // Swipe left - next
+                currentIndex++;
+                updateCarousel();
+                nextBtn.classList.add('btn-pressed');
+                setTimeout(() => nextBtn.classList.remove('btn-pressed'), 300);
+            } else if (touchEndX > touchStartX + swipeThreshold && currentIndex > 0) {
+                // Swipe right - previous
+                currentIndex--;
+                updateCarousel();
+                prevBtn.classList.add('btn-pressed');
+                setTimeout(() => prevBtn.classList.remove('btn-pressed'), 300);
+            }
+        }
+        
+        // Initialize carousel
+        updateCarousel(false);
+        
+        // Add intersection observer for animation when scrolling
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        
+        // Observe all cards
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+    });
+</script>
 {% endblock %}

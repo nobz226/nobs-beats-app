@@ -9,10 +9,18 @@
 
 <div class="youtube-container">
     <div class="youtube-form">
+        <div class="notice">
+            <i class="fas fa-info-circle"></i>
+            For best results, use videos under 10 minutes in length
+        </div>
+        
         <!-- URL Input Section -->
         <div class="url-input-section">
             <input type="text" id="youtube-url" placeholder="Enter YouTube video or playlist URL" class="url-input">
-            <button id="fetch-btn" class="fetch-button">Fetch Video(s)</button>
+            <button id="fetch-btn" class="fetch-button">
+                <span>Fetch Video(s)</span>
+                <i class="fas fa-search"></i>
+            </button>
         </div>
 
         <!-- Format Selection -->
@@ -42,7 +50,10 @@
 
         <!-- Conversion Controls -->
         <div class="conversion-controls" style="display: none;">
-            <button id="convert-btn" disabled>Convert Selected</button>
+            <button id="convert-btn" disabled>
+                <span>Convert Selected</span>
+                <i class="fas fa-exchange-alt"></i>
+            </button>
         </div>
 
         <!-- Status Section -->

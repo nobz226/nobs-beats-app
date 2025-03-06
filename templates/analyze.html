@@ -8,13 +8,24 @@
 <h2>Analyze Tempo and Key (Tempo detection is aproximate and in some cases it might display double time)</h2>
 <div class="analyzer-container">
     <div class="analyzer-form">
+        <div class="notice">
+            <i class="fas fa-info-circle"></i>
+            For best results, use high-quality audio files
+        </div>
+        
         <div class="file-drop-area">
             <input type="file" id="audio-file" accept=".mid,.midi,.xml,.mxl,.abc,.wav,.mp3" class="file-input">
+            <div class="file-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
             <div class="file-msg">Drag & drop audio file or click to select</div>
             <div class="file-name"></div>
         </div>
 
-        <button id="analyze-btn" disabled>Analyze</button>
+        <button id="analyze-btn" disabled>
+            <span class="btn-text">Analyze</span>
+            <i class="fas fa-wave-square"></i>
+        </button>
 
         <div class="analysis-status" style="display: none;">
             <div class="analyzer-progress-container">

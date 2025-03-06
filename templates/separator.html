@@ -10,16 +10,23 @@
 <div class="separator-container">
     <div class="separator-form">
         <div class="notice">
+            <i class="fas fa-info-circle"></i>
             For best results, use MP3 files under 15MB
         </div>
         
         <div class="file-drop-area">
             <input type="file" id="audio-file" accept="audio/*" class="file-input">
+            <div class="file-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
             <div class="file-msg">Drag & drop audio file or click to select</div>
             <div class="file-name"></div>
         </div>
 
-        <button id="separate-btn" disabled>Separate Stems</button>
+        <button id="separate-btn" class="btn" disabled>
+            <span class="btn-text">Separate Stems</span>
+            <i class="fas fa-layer-group"></i>
+        </button>
 
         <div class="separation-status" style="display: none;">
             <div class="separator-progress-container">
@@ -30,39 +37,498 @@
 
         <div class="stems-section" style="display: none;">
             <div class="stem-card" data-stem="drums">
+                <div class="stem-icon">
+                    <i class="fas fa-drum"></i>
+                </div>
                 <h3>Drums</h3>
-                <audio controls>
-                    <source src="" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-                <button class="download-btn">Download Drums</button>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="audio-visualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Download Drums</span>
+                </button>
             </div>
             <div class="stem-card" data-stem="bass">
+                <div class="stem-icon">
+                    <i class="fas fa-guitar"></i>
+                </div>
                 <h3>Bass</h3>
-                <audio controls>
-                    <source src="" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-                <button class="download-btn">Download Bass</button>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="audio-visualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Download Bass</span>
+                </button>
             </div>
             <div class="stem-card" data-stem="vocals">
+                <div class="stem-icon">
+                    <i class="fas fa-microphone"></i>
+                </div>
                 <h3>Vocals</h3>
-                <audio controls>
-                    <source src="" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-                <button class="download-btn">Download Vocals</button>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="audio-visualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Download Vocals</span>
+                </button>
             </div>
             <div class="stem-card" data-stem="melody">
+                <div class="stem-icon">
+                    <i class="fas fa-music"></i>
+                </div>
                 <h3>Melody</h3>
-                <audio controls>
-                    <source src="" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-                <button class="download-btn">Download Melody</button>
+                <div class="audio-player">
+                    <audio controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="audio-visualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+                <button class="download-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Download Melody</span>
+                </button>
             </div>
         </div>
     </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const fileInput = document.getElementById('audio-file');
+        const fileDropArea = document.querySelector('.file-drop-area');
+        const fileName = document.querySelector('.file-name');
+        const separateBtn = document.getElementById('separate-btn');
+        const separationStatus = document.querySelector('.separation-status');
+        const progressBar = document.querySelector('.separator-progress');
+        const statusText = document.querySelector('.separator-status-text');
+        const stemsSection = document.querySelector('.stems-section');
+        
+        // File upload handling
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        fileDropArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        });
+        
+        fileDropArea.addEventListener('dragleave', function() {
+            this.classList.remove('drag-over');
+        });
+        
+        fileDropArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            this.classList.add('file-dropped');
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+            
+            setTimeout(() => {
+                this.classList.remove('file-dropped');
+            }, 1000);
+        });
+        
+        function handleFileSelect() {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                
+                // Check if it's an audio file
+                if (!file.type.match('audio.*')) {
+                    showNotification('Please select an audio file', 'error');
+                    return;
+                }
+                
+                // Check file size (15MB limit)
+                if (file.size > 15 * 1024 * 1024) {
+                    showNotification('File size exceeds 15MB limit', 'error');
+                    return;
+                }
+                
+                fileName.textContent = file.name;
+                separateBtn.disabled = false;
+                
+                // Add success animation
+                fileDropArea.classList.add('file-success');
+                setTimeout(() => {
+                    fileDropArea.classList.remove('file-success');
+                }, 1000);
+            }
+        }
+        
+        // Separation process
+        separateBtn.addEventListener('click', function() {
+            if (fileInput.files.length === 0) return;
+            
+            // Show separation status
+            separationStatus.style.display = 'block';
+            separateBtn.disabled = true;
+            
+            // Simulate separation process (in a real app, this would be an API call)
+            let progress = 0;
+            statusText.textContent = 'Preparing audio...';
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    completeProcess();
+                }
+                
+                // Update progress bar
+                progressBar.style.width = `${progress}%`;
+                
+                // Update status text based on progress
+                if (progress < 25) {
+                    statusText.textContent = 'Analyzing audio...';
+                } else if (progress < 50) {
+                    statusText.textContent = 'Separating drums...';
+                } else if (progress < 75) {
+                    statusText.textContent = 'Separating vocals...';
+                } else {
+                    statusText.textContent = 'Finalizing stems...';
+                }
+            }, 200);
+            
+            function completeProcess() {
+                statusText.textContent = 'Separation complete!';
+                
+                // Show stems section with animation
+                setTimeout(() => {
+                    stemsSection.style.display = 'grid';
+                    
+                    // Animate each stem card
+                    const stemCards = document.querySelectorAll('.stem-card');
+                    stemCards.forEach((card, index) => {
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(20px)';
+                        
+                        setTimeout(() => {
+                            card.style.transition = 'all 0.5s ease';
+                            card.style.opacity = '1';
+                            card.style.transform = 'translateY(0)';
+                        }, 100 * index);
+                    });
+                    
+                    // Set up audio visualizers
+                    setupVisualizers();
+                    
+                    // In a real app, you would set the audio sources here
+                    // For demo purposes, we'll use a sample audio
+                    const audioElements = document.querySelectorAll('.audio-player audio');
+                    audioElements.forEach(audio => {
+                        // This would be replaced with actual stem URLs
+                        // audio.src = `/static/samples/${audio.parentElement.parentElement.dataset.stem}.mp3`;
+                    });
+                    
+                    // Set up download buttons
+                    setupDownloadButtons();
+                }, 500);
+            }
+        });
+        
+        // Set up audio visualizers
+        function setupVisualizers() {
+            const audioElements = document.querySelectorAll('.audio-player audio');
+            
+            audioElements.forEach(audio => {
+                const visualizer = audio.parentElement.querySelector('.audio-visualizer');
+                const bars = visualizer.querySelectorAll('.bar');
+                
+                audio.addEventListener('play', function() {
+                    visualizer.classList.add('active');
+                    animateBars(bars);
+                });
+                
+                audio.addEventListener('pause', function() {
+                    visualizer.classList.remove('active');
+                });
+                
+                audio.addEventListener('ended', function() {
+                    visualizer.classList.remove('active');
+                });
+            });
+        }
+        
+        function animateBars(bars) {
+            bars.forEach(bar => {
+                const height = Math.floor(Math.random() * 50) + 10;
+                const duration = Math.floor(Math.random() * 1.5) + 0.5;
+                bar.style.height = `${height}px`;
+                bar.style.animationDuration = `${duration}s`;
+            });
+            
+            if (document.querySelector('.audio-player audio:playing')) {
+                requestAnimationFrame(() => animateBars(bars));
+            }
+        }
+        
+        // Set up download buttons
+        function setupDownloadButtons() {
+            const downloadButtons = document.querySelectorAll('.download-btn');
+            
+            downloadButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const stemType = this.parentElement.dataset.stem;
+                    
+                    // In a real app, this would download the actual file
+                    // For demo purposes, we'll show a notification
+                    showNotification(`Downloading ${stemType} stem...`, 'success');
+                    
+                    // Add click animation
+                    this.classList.add('clicked');
+                    setTimeout(() => {
+                        this.classList.remove('clicked');
+                    }, 300);
+                });
+            });
+        }
+        
+        // Notification function
+        function showNotification(message, type = 'info') {
+            // Check if notification container exists, if not create it
+            let notificationContainer = document.querySelector('.notification-container');
+            if (!notificationContainer) {
+                notificationContainer = document.createElement('div');
+                notificationContainer.className = 'notification-container';
+                document.body.appendChild(notificationContainer);
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            // Add icon based on type
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'error') icon = 'exclamation-circle';
+            
+            notification.innerHTML = `
+                <i class="fas fa-${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            // Add to container
+            notificationContainer.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Remove after delay
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .audio-visualizer {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        height: 50px;
+        gap: 3px;
+        margin: 10px 0;
+        opacity: 0.5;
+    }
+    
+    .audio-visualizer.active {
+        opacity: 1;
+    }
+    
+    .audio-visualizer .bar {
+        width: 5px;
+        height: 5px;
+        background-color: var(--primary-color);
+        border-radius: 2px;
+        transition: height 0.2s ease;
+    }
+    
+    .audio-visualizer.active .bar {
+        animation: sound-wave 1s infinite alternate;
+    }
+    
+    .audio-visualizer .bar:nth-child(1) {
+        animation-delay: 0s;
+    }
+    
+    .audio-visualizer .bar:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .audio-visualizer .bar:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    .audio-visualizer .bar:nth-child(4) {
+        animation-delay: 0.6s;
+    }
+    
+    .audio-visualizer .bar:nth-child(5) {
+        animation-delay: 0.8s;
+    }
+    
+    @keyframes sound-wave {
+        0% {
+            height: 5px;
+        }
+        100% {
+            height: 40px;
+        }
+    }
+    
+    .file-drop-area {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    .file-drop-area.drag-over {
+        transform: scale(1.02);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border-color: var(--primary-color);
+        background-color: rgba(252, 66, 66, 0.1);
+    }
+    
+    .file-drop-area.file-dropped {
+        animation: pulse 0.5s;
+    }
+    
+    .file-drop-area.file-success {
+        border-color: #4CAF50;
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+    
+    .file-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+    
+    .file-drop-area:hover .file-icon {
+        transform: translateY(-5px);
+        opacity: 1;
+    }
+    
+    .stem-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+    
+    .stem-card:hover .stem-icon {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    
+    .download-btn.clicked {
+        transform: scale(0.95);
+    }
+    
+    /* Notification styles */
+    .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .notification {
+        background: rgba(30, 30, 30, 0.9);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transform: translateX(120%);
+        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        backdrop-filter: blur(10px);
+        border-left: 3px solid #2196F3;
+    }
+    
+    .notification.success {
+        border-left-color: #4CAF50;
+    }
+    
+    .notification.error {
+        border-left-color: #F44336;
+    }
+    
+    .notification.show {
+        transform: translateX(0);
+    }
+    
+    .notification i {
+        font-size: 1.2rem;
+    }
+    
+    .notification.success i {
+        color: #4CAF50;
+    }
+    
+    .notification.error i {
+        color: #F44336;
+    }
+</style>
 {% endblock %}
