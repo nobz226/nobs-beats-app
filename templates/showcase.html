@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-<!-- Replace the text title with an image -->
+<!-- Replace the image title with a text title -->
 <div class="title-container">
-    <img src="{{ url_for('static', filename='images/title10.png') }}" alt="Beats and Remixes" class="title-image">
+    <h1 class="text-title"><span class="word">Beats</span> <span class="word">and</span> <span class="word">Remixes</span></h1>
 </div>
 <h2>Home made beats and remixes</h2>
 <form method="GET" action="{{ url_for('showcase') }}">

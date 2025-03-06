@@ -57,7 +57,7 @@
 
 .track-card:hover {
     transform: scale(1.02);
-    border: 1px solid #fc0404;
+    border: 1px solid #fc4242;
 }
 
 .track-artwork {
@@ -200,11 +200,11 @@
 }
 
 .play-track-btn:hover {
-    border-color: #fc0404 !important;
+    border-color: #fc4242 !important;
 }
 
 .play-track-btn:hover::before {
-    border-color: transparent transparent transparent #fc0404;
+    border-color: transparent transparent transparent #fc4242;
 }
 
 .track-card button {
@@ -222,7 +222,7 @@
 }
 
 .track-card button:hover {
-    background-color: #fc0404;
+    background-color: #fc4242;
     opacity: 1;
 }
 
@@ -356,19 +356,19 @@
     /* Add active (touch) states instead */
     .track-card:active {
         transform: scale(0.98);
-        border: 1px solid #fc0404;
+        border: 1px solid #fc4242;
     }
 
     .play-track-btn:active {
-        border-color: #fc0404 !important;
+        border-color: #fc4242 !important;
     }
 
     .play-track-btn:active::before {
-        border-color: transparent transparent transparent #fc0404;
+        border-color: transparent transparent transparent #fc4242;
     }
 
     .track-card button:active {
-        background-color: #fc0404;
+        background-color: #fc4242;
         opacity: 1;
     }
 }
@@ -376,19 +376,19 @@
 @media (hover: hover) and (pointer: fine) {
     .track-card:hover {
         transform: scale(1.02);
-        border: 1px solid #fc0404;
+        border: 1px solid #fc4242;
     }
 
     .play-track-btn:hover {
-        border-color: #fc0404 !important;
+        border-color: #fc4242 !important;
     }
 
     .play-track-btn:hover::before {
-        border-color: transparent transparent transparent #fc0404;
+        border-color: transparent transparent transparent #fc4242;
     }
 
     .track-card button:hover {
-        background-color: #fc0404;
+        background-color: #fc4242;
         opacity: 1;
     }
 }

@@ -8,6 +8,73 @@
     animation: fadeInUp 2s forwards;
 }
 
+/* Title Container */
+.title-container, .title-container-about {
+    text-align: center;
+    width: 100%;
+    margin: 20px 0 40px;
+    min-height: 80px;
+    display: block;
+}
+
+/* Text Title Styles - ChatGPT Style Animation */
+.text-title {
+    font-family: 'Agave', monospace;
+    font-size: 3rem;
+    text-align: center;
+    margin: 30px auto 50px;
+    position: relative;
+    display: inline-block;
+    min-height: 60px;
+    color: #ffffff; /* Ensure text is visible */
+    --cursor-left: 0px; /* Initial cursor position */
+}
+
+/* Style for the words */
+.text-title .word {
+    display: inline-block;
+    position: relative;
+}
+
+/* ChatGPT style typing animation for each letter */
+.text-title .char {
+    display: inline-block;
+    opacity: 0;
+    animation: typeChar 0.1s forwards;
+}
+
+/* Blinking cursor */
+.text-title::after {
+    content: '_';
+    position: absolute;
+    left: var(--cursor-left); /* Use the dynamic position */
+    bottom: 5px;
+    color: #ffffff;
+    animation: blinkCursor 1s step-end infinite;
+    font-size: inherit;
+    transition: left 0.3s ease-out; /* Smoother cursor movement */
+    z-index: 10; /* Ensure cursor is always visible */
+    opacity: 1; /* Make sure cursor is visible */
+}
+
+/* Keyframes for character typing */
+@keyframes typeChar {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Keyframes for cursor blinking */
+@keyframes blinkCursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
 /* Home Page Styles */
 .title-image-home {
     margin-top: -30px;
@@ -40,13 +107,6 @@
 }
 
 /* About Page Styles */
-.title-container-about {
-    text-align: center;
-    margin-top: 5px;
-    padding: 20px;
-    border-radius: 10px;
-}
-
 .title-image-about {
     margin-top: -50px;
     max-width: 100%;
@@ -140,6 +200,20 @@
         margin-top: -30px;
     }
     
+    /* Text Title Mobile Styles */
+    .text-title {
+        font-size: 2.2rem;
+        margin: 20px auto 40px;
+    }
+    
+    .title-container, .title-container-about {
+        margin: 15px 0 30px;
+    }
+    
+    .text-title::after {
+        bottom: 4px;
+    }
+    
     /* About Page */
     .title-image-about {
         height: 150px;
@@ -199,4 +273,42 @@
     .about-container h4 { font-size: 0.95rem; }
     .about-container p { font-size: 0.8rem; }
     .section-description { font-size: 0.75rem; }
+    
+    .text-title {
+        font-size: 1.8rem;
+        margin: 15px auto 30px;
+    }
+    
+    .title-container, .title-container-about {
+        margin: 10px 0 25px;
+    }
+    
+    .text-title::after {
+        bottom: 3px;
+    }
+}
+
+/* Home Content Styles */
+.home-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.home-content .text-title {
+    margin-bottom: 40px;
+    font-size: 3.5rem;
+}
+
+@media (max-width: 768px) {
+    .home-content .text-title {
+        font-size: 2.8rem;
+        margin-bottom: 30px;
+    }
+}
+
+@media (max-width: 360px) {
+    .home-content .text-title {
+        font-size: 2rem;
+        margin-bottom: 25px;
+    }
 }

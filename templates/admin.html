@@ -3,7 +3,7 @@
 
 <div class="admin-page">
     <div class="title-container">
-        <img class="admin-title-image" src="{{ url_for('static', filename='images/admin3.png') }}" alt="Admin">
+        <h1 class="text-title"><span class="word">Admin</span> <span class="word">Panel</span></h1>
     </div>
 
     <div class="admin-container">
@@ -24,9 +24,15 @@
                     </div>
                     <div class="admin-track-artwork-small">
                         <img src="{{ url_for('static', filename='uploads/' + (track.artwork or 'No Artwork')) }}" alt="Track Artwork">
+                        {% if track.artwork and track.artwork != "No Artwork" %}
+                        <button type="button" class="remove-artwork-btn" data-track-id="{{ track.id }}" data-artwork-type="primary" title="Remove primary artwork">×</button>
+                        {% endif %}
                     </div>
                     <div class="admin-track-artwork-secondary-small">
                         <img src="{{ url_for('static', filename='uploads/' + (track.artwork_secondary or 'No Secondary Artwork')) }}" alt="Secondary Artwork">
+                        {% if track.artwork_secondary and track.artwork_secondary != "No Secondary Artwork" %}
+                        <button type="button" class="remove-artwork-btn" data-track-id="{{ track.id }}" data-artwork-type="secondary" title="Remove secondary artwork">×</button>
+                        {% endif %}
                     </div>
                     <div class="track-title">{{ track.name }}</div>
                 </div>

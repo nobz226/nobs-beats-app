@@ -28,7 +28,7 @@
 }
 
 .chat-controls button:hover {
-    background-color: #fc0404;
+    background-color: #fc4242;
     opacity: 1;
 }
 
@@ -95,7 +95,7 @@
 /* Style bullet points */
 .bot-message ul li::before {
     content: "•";
-    color: #fc0404;
+    color: #fc4242;
     font-weight: bold;
     display: inline-block;
     width: 1em;
@@ -118,7 +118,7 @@
 
 .bot-message ol li::before {
     content: counter(item) ".";
-    color: #fc0404;
+    color: #fc4242;
     font-weight: bold;
     margin-right: 8px;
     margin-left: -20px;
@@ -164,7 +164,7 @@
 }
 
 #sendBtn:hover {
-    background-color: #fc0404;
+    background-color: #fc4242;
     opacity: 1;
 }
 
@@ -204,7 +204,7 @@
 
 /* Highlight important information */
 .bot-message strong {
-    color: #fc0404;
+    color: #fc4242;
     font-weight: 600;
 }
 

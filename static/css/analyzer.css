@@ -68,7 +68,7 @@
 }
 
 #analyze-btn:not(:disabled):hover {
-    background-color: #fc0404;
+    background-color: #fc4242;
     opacity: 1;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .result-value {
-    color: #fc0404;
+    color: #fc4242;
     font-size: 2rem;
     font-weight: bold;
 }

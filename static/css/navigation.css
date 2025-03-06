@@ -70,7 +70,7 @@
 
 .menu-dropdown a:hover {
     background-color: rgba(252, 4, 4, 0.1);
-    color: #fc0404;
+    color: #fc4242;
     padding-left: 25px;
 }
 
@@ -107,7 +107,7 @@
 }
 
 .login button:hover {
-    background-color: #fc0404;
+    background-color: #fc4242;
     opacity: 1;
 }
 

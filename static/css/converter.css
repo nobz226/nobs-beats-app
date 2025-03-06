@@ -78,8 +78,8 @@
 }
 
 .format-btn:hover {
-    border-color: #fc0404;
-    background-color: #fc0404;
+    border-color: #fc4242;
+    background-color: #fc4242;
     opacity: 1;
 }
 
@@ -105,7 +105,7 @@
 }
 
 #convert-btn:not(:disabled):hover {
-    background-color: #fc0404;
+    background-color: #fc4242;
     opacity: 1;
 }
 
@@ -150,7 +150,7 @@
 }
 
 .download-btn:hover {
-    background-color: #fc0404;
+    background-color: #fc4242;
     opacity: 1;
 }
 

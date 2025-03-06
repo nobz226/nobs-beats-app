@@ -1,4 +1,3 @@
-
 function selectAllTracks() {
     const checkboxes = document.querySelectorAll('.track-checkbox');
     const areAllChecked = Array.from(checkboxes).every(cb => cb.checked);
@@ -96,3 +95,59 @@ function getSelectedTrackIds() {
             });
         }
     }
+
+// Add event listeners for remove artwork buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const removeButtons = document.querySelectorAll('.remove-artwork-btn');
+    removeButtons.forEach(button => {
+        button.addEventListener('click', removeArtwork);
+    });
+});
+
+// Function to remove artwork
+async function removeArtwork(event) {
+    event.stopPropagation();
+    const button = event.currentTarget;
+    const trackId = button.dataset.trackId;
+    const artworkType = button.dataset.artworkType;
+    
+    if (confirm(`Are you sure you want to remove the ${artworkType} artwork?`)) {
+        try {
+            const response = await fetch('/remove_artwork', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    track_id: trackId, 
+                    artwork_type: artworkType 
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update the UI
+                const artworkContainer = button.closest(artworkType === 'primary' ? 
+                    '.admin-track-artwork-small' : '.admin-track-artwork-secondary-small');
+                const img = artworkContainer.querySelector('img');
+                
+                // Update the image source to the default "No Artwork" image
+                img.src = artworkType === 'primary' ? 
+                    '/static/uploads/No Artwork' : 
+                    '/static/uploads/No Secondary Artwork';
+                
+                // Remove the button
+                button.remove();
+                
+                // Show success message
+                alert('Artwork removed successfully!');
+            } else {
+                alert('Error removing artwork: ' + (data.message || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error removing artwork');
+        }
+    }
+}
