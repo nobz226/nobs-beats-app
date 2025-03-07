@@ -59,7 +59,7 @@ h2 {
 /* Main container styling - matching separator page */
 .youtube-container {
     max-width: 900px;
-    margin: 0 auto;
+    margin: 1rem auto 0; /* Changed to 1rem */
     padding: 2rem;
     padding-bottom: 6rem;
     background: rgba(20, 20, 20, 0.7);

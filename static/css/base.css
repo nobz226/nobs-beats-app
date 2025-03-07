@@ -135,7 +135,7 @@ body::before {
 }
 
 main {
-    padding: 40px 20px 80px;
+    padding: 40px 20px 200px; /* Increased bottom padding from 80px to 200px */
     text-align: center;
     font-size: 16px;
     min-height: calc(100vh - 80px);
@@ -449,5 +449,32 @@ a:hover {
     main {
         max-width: 1600px;
         margin: 0 auto;
+    }
+}
+
+/* Add these styles at the end of base.css */
+.analyzer-container,
+.separator-container,
+.youtube-container {
+    padding-bottom: 120px; /* Adds space at the bottom */
+}
+
+/* Add these styles to create space AFTER the containers */
+main {
+    padding: 40px 20px 200px; /* Increased bottom padding from 80px to 200px */
+}
+
+/* Ensure content is visible on very large screens */
+@media (min-width: 1600px) {
+    main {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+}
+
+/* Added styles for fullscreen mode */
+@media (min-height: 900px) {
+    main {
+        padding-bottom: 120px;
     }
 }

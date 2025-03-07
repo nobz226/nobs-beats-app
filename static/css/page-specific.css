@@ -467,3 +467,21 @@
         height: 100px;
     }
 }
+
+/* Add spacing between hero and content containers */
+.analyzer-container,
+.separator-container,
+.converter-container,
+.youtube-container {
+    margin-top: 3rem; /* Adds 48px of space after hero section */
+}
+
+/* Responsive adjustment for mobile */
+@media (max-width: 768px) {
+    .analyzer-container,
+    .separator-container,
+    .converter-container,
+    .youtube-container {
+        margin-top: 2rem; /* Slightly less space on mobile */
+    }
+}
