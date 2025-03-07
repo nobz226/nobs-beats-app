@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
+{% from 'components/hero.html' import hero %}
+
 {% block content %}
-
-<div class="title-container">
-    <h1 class="text-title"><span class="word">Audio</span> <span class="word">Converter</span></h1>
+<div class="hero-section">
+    <div class="title-container">
+        <h1 class="text-title"><span class="word">Audio</span> <span class="word">Converter</span></h1>
+        <p class="subtitle">Convert your audio files to any format</p>
+    </div>
 </div>
-
-<h2 class="subtitle">Convert audio files to MP3 WAV or FLAC formats</h2>
 
 <div class="converter-container">
     <div class="converter-form">

@@ -35,6 +35,18 @@
                         {% endif %}
                     </div>
                     <div class="track-title">{{ track.name }}</div>
+                    <div class="track-stats">
+                        <div class="track-likes">
+                            <span class="stat-label">Likes:</span>
+                            <span class="stat-value">{{ track.like_count or 0 }}</span>
+                            <button type="button" class="clear-likes-btn" data-track-id="{{ track.id }}" title="Clear likes">Clear</button>
+                        </div>
+                        <div class="track-unlikes">
+                            <span class="stat-label">Unlikes:</span>
+                            <span class="stat-value">{{ track.unlike_count or 0 }}</span>
+                            <button type="button" class="clear-unlikes-btn" data-track-id="{{ track.id }}" title="Clear unlikes">Clear</button>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -101,4 +113,74 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Clear likes button functionality
+        document.querySelectorAll('.clear-likes-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const trackId = this.getAttribute('data-track-id');
+                const trackName = this.closest('.admin-track-item').getAttribute('data-track-name');
+                
+                if (confirm(`Are you sure you want to clear all likes for "${trackName}"?`)) {
+                    fetch(`/track/clear-likes/${trackId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update the like count display
+                            this.parentElement.querySelector('.stat-value').textContent = '0';
+                            alert('Likes cleared successfully!');
+                        } else {
+                            alert('Error: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while clearing likes.');
+                    });
+                }
+            });
+        });
+        
+        // Clear unlikes button functionality
+        document.querySelectorAll('.clear-unlikes-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const trackId = this.getAttribute('data-track-id');
+                const trackName = this.closest('.admin-track-item').getAttribute('data-track-name');
+                
+                if (confirm(`Are you sure you want to clear all unlikes for "${trackName}"?`)) {
+                    fetch(`/track/clear-unlikes/${trackId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Update the unlike count display
+                            this.parentElement.querySelector('.stat-value').textContent = '0';
+                            alert('Unlikes cleared successfully!');
+                        } else {
+                            alert('Error: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while clearing unlikes.');
+                    });
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

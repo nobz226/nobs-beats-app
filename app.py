@@ -645,8 +645,7 @@ def about():
 
 @app.route('/showcase')
 def showcase():
-    latest_track = Track.query.order_by(Track.date_added.desc()).first()
-    sort_by = request.args.get('sort', 'name_asc')
+    sort_by = request.args.get('sort', 'date_desc')
     
     if sort_by == 'name_asc':
         tracks = Track.query.order_by(Track.name.asc()).all()
@@ -654,13 +653,14 @@ def showcase():
         tracks = Track.query.order_by(Track.name.desc()).all()
     elif sort_by == 'date_asc':
         tracks = Track.query.order_by(Track.date_added.asc()).all()
-    elif sort_by == 'date_desc':
-        tracks = Track.query.order_by(Track.date_added.desc()).all()
     elif sort_by == 'play_count':
         tracks = Track.query.order_by(Track.play_count.desc()).all()
-    else:
-        tracks = Track.query.all()
-        
+    elif sort_by == 'like_count':  # New sorting option
+        tracks = Track.query.order_by(Track.like_count.desc()).all()
+    else:  # date_desc is default
+        tracks = Track.query.order_by(Track.date_added.desc()).all()
+    
+    latest_track = Track.query.order_by(Track.date_added.desc()).first()
     return render_template('showcase.html', tracks=tracks, sort_by=sort_by, latest_track=latest_track)
 
 @app.route('/converter', methods=['GET', 'POST'])
@@ -970,6 +970,42 @@ def remove_artwork():
         db.session.commit()
         
     return redirect(url_for('admin_panel'))
+
+# Like track route
+@app.route('/track/like/<int:track_id>', methods=['POST'])
+def like_track(track_id):
+    track = Track.query.get_or_404(track_id)
+    track.like_count = track.like_count + 1 if track.like_count else 1
+    db.session.commit()
+    return jsonify({'success': True, 'like_count': track.like_count})
+
+# Unlike track route
+@app.route('/track/unlike/<int:track_id>', methods=['POST'])
+def unlike_track(track_id):
+    track = Track.query.get_or_404(track_id)
+    track.unlike_count = track.unlike_count + 1 if track.unlike_count else 1
+    db.session.commit()
+    return jsonify({'success': True, 'unlike_count': track.unlike_count})
+
+# Clear likes for a track
+@app.route('/track/clear-likes/<int:track_id>', methods=['POST'])
+@login_required
+@admin_required
+def clear_likes(track_id):
+    track = Track.query.get_or_404(track_id)
+    track.like_count = 0
+    db.session.commit()
+    return jsonify({'success': True})
+
+# Clear unlikes for a track
+@app.route('/track/clear-unlikes/<int:track_id>', methods=['POST'])
+@login_required
+@admin_required
+def clear_unlikes(track_id):
+    track = Track.query.get_or_404(track_id)
+    track.unlike_count = 0
+    db.session.commit()
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     with app.app_context():

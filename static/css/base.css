@@ -18,10 +18,11 @@
     
     /* Colors */
     --primary-color: #fc4242;
-    --secondary-color: #f6f0dc;
-    --text-color: #f6f0dc;
+    --secondary-color: #2c2c2c;
+    --text-color: #ffffff;
     --background-color: #121212;
-    --card-background: rgba(30, 30, 30, 0.7);
+    --card-background: #1e1e1e;
+    --hover-color: #fc4242;
     --card-hover-background: rgba(40, 40, 40, 0.8);
     
     /* Shadows */
@@ -112,15 +113,9 @@
 /* Body and Main Layout */
 body {
     font-family: 'Agave', sans-serif;
-    font-size: 50px;
-    background-image: url('/static/images/bg3.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
-    background-color: var(--bg-darker);
     scroll-behavior: smooth;
     margin: 0;
     padding: 0;

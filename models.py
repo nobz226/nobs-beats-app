@@ -15,7 +15,7 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
 
-# Track model remains unchanged
+# Track model with like and unlike counts
 class Track(db.Model):
     __tablename__ = 'tracks'
 
@@ -24,8 +24,10 @@ class Track(db.Model):
     description = db.Column(db.String(500), nullable=True)
     file = db.Column(db.String(200), nullable=False)
     artwork = db.Column(db.String(200), nullable=True)
-    artwork_secondary = db.Column(db.String(200), nullable=True)  # New field
+    artwork_secondary = db.Column(db.String(200), nullable=True)
     play_count = db.Column(db.Integer, default=0)
+    like_count = db.Column(db.Integer, default=0)  # New field for likes
+    unlike_count = db.Column(db.Integer, default=0)  # New field for unlikes
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):

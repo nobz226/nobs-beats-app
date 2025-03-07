@@ -274,3 +274,60 @@
     opacity: 1;
     background-color: #fc4242;
 }
+
+.track-stats {
+    display: flex;
+    gap: 15px;
+    margin-left: 15px;
+}
+
+.track-likes, .track-unlikes {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+}
+
+.stat-label {
+    color: #F5F5DC;
+    font-weight: bold;
+}
+
+.stat-value {
+    color: #F5F5DC;
+    min-width: 20px;
+    text-align: center;
+}
+
+.clear-likes-btn, .clear-unlikes-btn {
+    background-color: rgba(252, 66, 66, 0.1);
+    color: #F5F5DC;
+    border: 1px solid rgba(252, 66, 66, 0.3);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.clear-likes-btn:hover, .clear-unlikes-btn:hover {
+    background-color: rgba(252, 66, 66, 0.3);
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .track-stats {
+        flex-direction: column;
+        gap: 5px;
+        margin-left: 10px;
+    }
+    
+    .track-likes, .track-unlikes {
+        font-size: 0.8rem;
+    }
+    
+    .clear-likes-btn, .clear-unlikes-btn {
+        padding: 1px 6px;
+        font-size: 0.7rem;
+    }
+}
