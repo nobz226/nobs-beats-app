@@ -12,12 +12,12 @@
     
     <!-- Latest Beats Section - Now before Production Tools -->
     <div class="latest-section">
+        <h2 class="section-title">Latest Beats</h2>
         <div class="latest-content">
             <div class="vinyl-wrapper">
                 <img src="{{ url_for('static', filename='images/vinyl4.png') }}" alt="Vinyl Record" class="vinyl-image">
             </div>
             <div class="latest-text">
-                <h2 class="section-title">Latest Beats</h2>
                 <p class="section-description">Check out the newest productions and remixes from Nobz. Fresh beats and innovative sounds to inspire your next project.</p>
                 <a href="{{ url_for('showcase') }}" class="cta-button">Browse All Beats</a>
             </div>
@@ -74,9 +74,9 @@
                             <div class="card-icon">
                                 <i class="fab fa-youtube"></i>
                             </div>
-                            <h3 class="tool-title"><span class="word-white">YouTube</span> <span class="word-red">Downloader</span></h3>
-                            <p>Extract audio from YouTube videos and playlists</p>
-                            <p class="tool-description">Legally download audio from YouTube videos for personal use. Save your favorite music, lectures, or podcasts in high-quality audio formats for offline listening.</p>
+                            <h3 class="tool-title"><span class="word-white">YouTube</span> <span class="word-red">to Audio</span></h3>
+                            <p>Extract audio from YouTube videos</p>
+                            <p class="tool-description">Download high-quality audio from YouTube videos and playlists. Perfect for creating samples or saving music for offline listening.</p>
                             <a href="{{ url_for('youtube_converter') }}" class="feature-link">Try Now</a>
                         </div>
                     </div>
@@ -87,8 +87,8 @@
                                 <i class="fas fa-book"></i>
                             </div>
                             <h3 class="tool-title"><span class="word-white">Production</span> <span class="word-red">Guides</span></h3>
-                            <p>Learn beatmaking with AI-powered production assistant</p>
-                            <p class="tool-description">Access interactive tutorials and AI-generated tips customized to your skill level. From basic beat construction to advanced mixing techniques, elevate your production skills.</p>
+                            <p>Learn music production with AI assistance</p>
+                            <p class="tool-description">Get personalized guidance on music production techniques, from basic beatmaking to advanced mixing. Powered by AI to answer all your production questions.</p>
                             <a href="{{ url_for('guides') }}" class="feature-link">Try Now</a>
                         </div>
                     </div>
@@ -99,8 +99,8 @@
                                 <i class="fas fa-music"></i>
                             </div>
                             <h3 class="tool-title"><span class="word-white">Beats</span> <span class="word-red">Showcase</span></h3>
-                            <p>Browse and play all available beats and remixes</p>
-                            <p class="tool-description">Explore our complete collection of original beats, remixes, and sample packs. Listen, download, and get inspired for your next musical project or performance.</p>
+                            <p>Browse and play all available beats</p>
+                            <p class="tool-description">Explore our complete collection of original beats and remixes. Listen to demos, download tracks, and find the perfect beat for your next project.</p>
                             <a href="{{ url_for('showcase') }}" class="feature-link">Try Now</a>
                         </div>
                     </div>
@@ -203,12 +203,6 @@
         z-index: 2;
     }
     
-    .latest-text .section-title {
-        text-align: left;
-        margin-bottom: 1.5rem;
-        font-size: 2.5rem;
-    }
-    
     .section-description {
         color: #cccccc;
         margin-bottom: 2rem;
@@ -299,6 +293,7 @@
         margin: 0 auto;
         position: relative;
         z-index: 1;
+        overflow: hidden;
     }
     
     .carousel-navigation {
@@ -321,13 +316,25 @@
         cursor: pointer;
         transition: all 0.3s ease;
         z-index: 10;
-        box-shadow: 0 0 15px rgba(252, 66, 66, 0.2);
+        box-shadow: 0 0 15px rgba(252, 66, 66, 0.3);
+        position: relative;
+    }
+    
+    .carousel-btn::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid rgba(252, 66, 66, 0.3);
+        animation: pulse 2s infinite;
+        box-sizing: border-box;
     }
     
     .carousel-btn:hover {
         background-color: rgba(252, 66, 66, 0.2);
         transform: scale(1.1);
-        box-shadow: 0 0 20px rgba(252, 66, 66, 0.4);
+        box-shadow: 0 0 20px rgba(252, 66, 66, 0.6);
     }
 
     .carousel-btn:active {
@@ -354,6 +361,7 @@
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
+        border: 1px solid rgba(252, 66, 66, 0.3);
     }
     
     .indicator::after {
@@ -375,23 +383,22 @@
 
     .indicator:hover {
         transform: scale(1.2);
+        box-shadow: 0 0 8px rgba(252, 66, 66, 0.6);
     }
     
     .feature-cards {
         display: flex;
-        overflow: hidden;
-        scroll-behavior: smooth;
         width: 100%;
         max-width: 1000px;
         gap: 2rem;
-        padding: 1.5rem 0.5rem;
+        transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
     
     .feature-card {
+        flex: 0 0 300px;
+        min-width: 300px;
         background: rgba(30, 30, 30, 0.7);
         border-radius: 15px;
-        width: 300px;
-        min-width: 300px;
         text-align: center;
         transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         backdrop-filter: blur(10px);
@@ -652,184 +659,112 @@
         const nextBtn = document.getElementById('next-btn');
         const indicators = document.querySelectorAll('.indicator');
         
+        console.log("Total cards:", cards.length);
+        
         let currentIndex = 0;
         let cardsPerView = window.innerWidth <= 768 ? 1 : 3;
         const maxIndex = Math.ceil(cards.length / cardsPerView) - 1;
         
-        // Add entrance animations to cards
-        cards.forEach((card, index) => {
-            card.style.animation = `fadeInUp 0.6s ease forwards ${0.1 + index * 0.1}s`;
-            card.style.opacity = '0';
-        });
+        console.log("Cards per view:", cardsPerView);
+        console.log("Max index:", maxIndex);
         
-        // Function to update carousel position with enhanced animation
+        // Function to update carousel position
         function updateCarousel(animate = true) {
             const cardWidth = cards[0].offsetWidth;
-            const gap = parseInt(window.getComputedStyle(cardsContainer).columnGap);
-            const scrollAmount = currentIndex * (cardWidth * cardsPerView + gap * (cardsPerView - 1));
+            const gap = parseInt(window.getComputedStyle(cardsContainer).columnGap || "32");
+            
+            // Calculate the total width of cards to move
+            const moveDistance = currentIndex * (cardWidth + gap) * cardsPerView;
+            
+            console.log("Moving by:", moveDistance, "px");
+            console.log("Current index:", currentIndex);
             
             if (animate) {
-                // Add a class for smooth transition
                 cardsContainer.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
             } else {
                 cardsContainer.style.transition = 'none';
             }
             
-            cardsContainer.style.transform = `translateX(-${scrollAmount}px)`;
+            cardsContainer.style.transform = `translateX(-${moveDistance}px)`;
             
-            // Update indicators with animation
-            indicators.forEach((indicator, index) => {
+            // Update indicators
+            document.querySelectorAll('.indicator').forEach((indicator, index) => {
                 if (index === currentIndex) {
                     indicator.classList.add('active');
-                    indicator.style.animation = 'pulse 1s';
                 } else {
                     indicator.classList.remove('active');
-                    indicator.style.animation = 'none';
                 }
             });
             
             // Update button states
-            prevBtn.disabled = currentIndex === 0;
             prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
-            nextBtn.disabled = currentIndex === maxIndex;
             nextBtn.style.opacity = currentIndex === maxIndex ? '0.5' : '1';
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === maxIndex;
         }
         
-        // Event listeners for navigation buttons with enhanced feedback
-        prevBtn.addEventListener('click', function() {
+        // Event listeners for navigation buttons
+        prevBtn.addEventListener('click', () => {
             if (currentIndex > 0) {
                 currentIndex--;
                 updateCarousel();
-                
-                // Add button press animation
-                this.classList.add('btn-pressed');
-                setTimeout(() => this.classList.remove('btn-pressed'), 300);
             }
         });
         
-        nextBtn.addEventListener('click', function() {
+        nextBtn.addEventListener('click', () => {
             if (currentIndex < maxIndex) {
                 currentIndex++;
                 updateCarousel();
-                
-                // Add button press animation
-                this.classList.add('btn-pressed');
-                setTimeout(() => this.classList.remove('btn-pressed'), 300);
             }
         });
         
-        // Event listeners for indicators with enhanced feedback
-        indicators.forEach(indicator => {
-            indicator.addEventListener('click', function() {
-                const newIndex = parseInt(this.getAttribute('data-index'));
-                if (newIndex !== currentIndex) {
-                    currentIndex = newIndex;
-                    updateCarousel();
-                    
-                    // Add indicator press animation
-                    this.style.animation = 'pulse 1s';
-                }
+        // Event listeners for indicators
+        document.querySelectorAll('.indicator').forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                currentIndex = index;
+                updateCarousel();
             });
         });
         
-        // Add keyboard navigation
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft' && currentIndex > 0) {
-                currentIndex--;
-                updateCarousel();
-                prevBtn.classList.add('btn-pressed');
-                setTimeout(() => prevBtn.classList.remove('btn-pressed'), 300);
-            } else if (e.key === 'ArrowRight' && currentIndex < maxIndex) {
-                currentIndex++;
-                updateCarousel();
-                nextBtn.classList.add('btn-pressed');
-                setTimeout(() => nextBtn.classList.remove('btn-pressed'), 300);
-            }
-        });
-        
-        // Handle window resize with improved responsiveness
-        window.addEventListener('resize', function() {
+        // Handle window resize
+        window.addEventListener('resize', () => {
             const newCardsPerView = window.innerWidth <= 768 ? 1 : 3;
             
             if (newCardsPerView !== cardsPerView) {
                 cardsPerView = newCardsPerView;
                 const newMaxIndex = Math.ceil(cards.length / cardsPerView) - 1;
                 
-                // Update indicators based on new max index
-                const indicatorsContainer = document.querySelector('.carousel-indicators');
-                indicatorsContainer.innerHTML = '';
-                
-                for (let i = 0; i <= newMaxIndex; i++) {
-                    const indicator = document.createElement('span');
-                    indicator.className = i === currentIndex ? 'indicator active' : 'indicator';
-                    indicator.setAttribute('data-index', i);
-                    indicator.addEventListener('click', function() {
-                        currentIndex = parseInt(this.getAttribute('data-index'));
-                        updateCarousel();
-                    });
-                    indicatorsContainer.appendChild(indicator);
-                }
-                
-                // Adjust current index if needed
                 if (currentIndex > newMaxIndex) {
                     currentIndex = newMaxIndex;
                 }
-                
-                // Update carousel without animation
-                updateCarousel(false);
-            } else {
-                // Just update the carousel position
-                updateCarousel(false);
             }
+            
+            updateCarousel(false);
         });
-        
-        // Add touch swipe support for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        cardsContainer.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
-        
-        cardsContainer.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, false);
-        
-        function handleSwipe() {
-            const swipeThreshold = 50;
-            if (touchEndX < touchStartX - swipeThreshold && currentIndex < maxIndex) {
-                // Swipe left - next
-                currentIndex++;
-                updateCarousel();
-                nextBtn.classList.add('btn-pressed');
-                setTimeout(() => nextBtn.classList.remove('btn-pressed'), 300);
-            } else if (touchEndX > touchStartX + swipeThreshold && currentIndex > 0) {
-                // Swipe right - previous
-                currentIndex--;
-                updateCarousel();
-                prevBtn.classList.add('btn-pressed');
-                setTimeout(() => prevBtn.classList.remove('btn-pressed'), 300);
-            }
-        }
         
         // Initialize carousel
         updateCarousel(false);
         
-        // Add intersection observer for animation when scrolling
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.2 });
+        // Add touch swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
         
-        // Observe all cards
-        cards.forEach(card => {
-            observer.observe(card);
-        });
+        cardsContainer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        cardsContainer.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const swipeThreshold = 50;
+            
+            if (touchEndX < touchStartX - swipeThreshold && currentIndex < maxIndex) {
+                currentIndex++;
+                updateCarousel();
+            } else if (touchEndX > touchStartX + swipeThreshold && currentIndex > 0) {
+                currentIndex--;
+                updateCarousel();
+            }
+        }, false);
     });
 </script>
 {% endblock %}

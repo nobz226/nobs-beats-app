@@ -20,6 +20,26 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/youtube.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <style>
+        /* Subtitle animation for all pages */
+        .subtitle, h2:not(.section-title) {
+            font-family: 'Agave', monospace;
+            font-size: 1.2rem;
+            color: #fc4242;
+            margin-top: 0.5rem;
+            text-align: center;
+            opacity: 0;
+            /* Calculate total animation time: 
+               1s initial delay + (avg 10 chars * 0.15s per char) + 1s buffer = ~3.5s */
+            animation: fadeIn 2s forwards 3.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+
     {% block extra_css %}{% endblock %}
 </head>
 

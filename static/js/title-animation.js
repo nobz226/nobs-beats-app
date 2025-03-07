@@ -3,6 +3,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const titles = document.querySelectorAll('.text-title');
     
     titles.forEach(title => {
+        // Remove any existing ::after styling by adding a class
+        title.classList.add('no-after-cursor');
+        
+        // Create a real cursor element
+        const cursor = document.createElement('span');
+        cursor.classList.add('terminal-cursor');
+        cursor.style.position = 'absolute';
+        cursor.style.width = '11.5px';  // 15% longer than 10px
+        cursor.style.height = '3px';
+        cursor.style.backgroundColor = '#ffffff';
+        cursor.style.display = 'inline-block';
+        cursor.style.left = '0px';
+        cursor.style.bottom = '0.5em';
+        cursor.style.animation = 'blinkCursor 0.8s step-end infinite';
+        cursor.style.zIndex = '10';
+        
+        // Add the cursor to the title
+        title.appendChild(cursor);
+        
         // Get all words in the title
         const words = title.querySelectorAll('.word');
         let totalChars = 0;
@@ -43,8 +62,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 
-                // Calculate delay: 1.5s initial delay (for cursor to blink) + time for previous characters
-                const delay = 1.5 + (totalChars * 0.15); // Slower typing speed
+                // Calculate delay: 1s initial delay + time for previous characters
+                const delay = 1 + (totalChars * 0.15); // Slower typing speed
                 charSpan.style.animationDelay = `${delay}s`;
                 
                 word.appendChild(charSpan);
@@ -61,54 +80,42 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Set initial cursor position - make sure it's visible from the start
-        title.style.setProperty('--cursor-left', '0px');
-        
-        // Create a function to move the cursor
-        function moveCursor() {
-            const visibleChars = title.querySelectorAll('.char');
-            if (visibleChars.length === 0) return;
+        // Simple cursor movement function
+        function updateCursor() {
+            // Find all visible characters
+            const chars = Array.from(title.querySelectorAll('.char'));
+            const visibleChars = chars.filter(char => 
+                window.getComputedStyle(char).opacity > 0
+            );
             
-            // Find the last visible character
-            let lastVisibleChar = null;
-            for (let i = visibleChars.length - 1; i >= 0; i--) {
-                if (window.getComputedStyle(visibleChars[i]).opacity > 0) {
-                    lastVisibleChar = visibleChars[i];
-                    break;
-                }
-            }
-            
-            if (lastVisibleChar) {
-                // Calculate cursor position based on the last visible character
-                const charRect = lastVisibleChar.getBoundingClientRect();
+            if (visibleChars.length > 0) {
+                // Get the last visible character
+                const lastChar = visibleChars[visibleChars.length - 1];
+                const rect = lastChar.getBoundingClientRect();
                 const titleRect = title.getBoundingClientRect();
-                const cursorPos = charRect.right - titleRect.left + 5;
                 
-                // Set cursor position
-                title.style.setProperty('--cursor-left', `${cursorPos}px`);
+                // Position cursor after the last visible character with a small offset
+                const cursorLeft = rect.right - titleRect.left + 2; // 2px ahead
+                cursor.style.left = `${cursorLeft}px`;
             }
         }
         
-        // Start moving the cursor after a delay to let it blink in place first
+        // Update cursor position every 100ms
+        const cursorInterval = setInterval(updateCursor, 100);
+        
+        // Stop updating after all characters have appeared
         setTimeout(() => {
-            // Move cursor less frequently for smoother animation
-            const cursorInterval = setInterval(moveCursor, 200);
+            clearInterval(cursorInterval);
             
-            // Stop the interval after all characters have appeared
-            setTimeout(() => {
-                clearInterval(cursorInterval);
-                
-                // Final cursor position at the end of text
-                const allChars = title.querySelectorAll('.char');
-                if (allChars.length > 0) {
-                    const lastChar = allChars[allChars.length - 1];
-                    const charRect = lastChar.getBoundingClientRect();
-                    const titleRect = title.getBoundingClientRect();
-                    const cursorPos = charRect.right - titleRect.left + 5;
-                    
-                    title.style.setProperty('--cursor-left', `${cursorPos}px`);
-                }
-            }, (totalChars * 150) + 1000);
-        }, 1500); // Start moving cursor after 1.5s (matches the initial delay for characters)
+            // Final position
+            const allChars = title.querySelectorAll('.char');
+            if (allChars.length > 0) {
+                const lastChar = allChars[allChars.length - 1];
+                const rect = lastChar.getBoundingClientRect();
+                const titleRect = title.getBoundingClientRect();
+                const cursorLeft = rect.right - titleRect.left + 2; // 2px ahead
+                cursor.style.left = `${cursorLeft}px`;
+            }
+        }, (totalChars * 150) + 2000);
     });
 }); 

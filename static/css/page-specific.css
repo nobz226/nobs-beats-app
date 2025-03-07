@@ -43,18 +43,17 @@
     animation: typeChar 0.1s forwards;
 }
 
-/* Blinking cursor */
+/* Terminal-style cursor */
 .text-title::after {
-    content: '_';
+    content: '';
     position: absolute;
-    left: var(--cursor-left); /* Use the dynamic position */
-    bottom: 5px;
-    color: #ffffff;
-    animation: blinkCursor 1s step-end infinite;
-    font-size: inherit;
-    transition: left 0.3s ease-out; /* Smoother cursor movement */
-    z-index: 10; /* Ensure cursor is always visible */
-    opacity: 1; /* Make sure cursor is visible */
+    width: 12px;
+    height: 3px;
+    background-color: #ffffff;
+    left: var(--cursor-left);
+    bottom: 10px;
+    animation: blinkCursor 0.8s step-end infinite;
+    z-index: 10;
 }
 
 /* Keyframes for character typing */
@@ -73,6 +72,11 @@
 @keyframes blinkCursor {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
+}
+
+/* Disable the original cursor for titles with the real cursor */
+.text-title.no-after-cursor::after {
+    display: none !important;
 }
 
 /* Home Page Styles */

@@ -388,16 +388,7 @@ def analyze_audio():
                 'error': 'No file selected'
             }), 400
 
-        # Check file size - limit to 10MB
-        audio_file.seek(0, os.SEEK_END)
-        file_size = audio_file.tell()
-        audio_file.seek(0)
-        
-        if file_size > 10 * 1024 * 1024:  # 10MB limit
-            return jsonify({
-                'success': False,
-                'error': 'File size too large. Please upload a file smaller than 10MB'
-            }), 400
+        # File size check removed
 
         file_uuid = str(uuid.uuid4())
         original_filename = secure_filename(audio_file.filename)
@@ -504,18 +495,6 @@ def stem_separator():
            return jsonify({
                'success': False,
                'error': 'Invalid file type. Please upload an MP3, WAV, M4A, or FLAC file.'
-           }), 400
-
-       # Check file size - 15MB limit
-       file_size = 0
-       audio_file.seek(0, os.SEEK_END)
-       file_size = audio_file.tell()
-       audio_file.seek(0)
-       
-       if file_size > 15 * 1024 * 1024:
-           return jsonify({
-               'success': False,
-               'error': 'File too large. Please upload a file smaller than 15MB'
            }), 400
 
        # Create unique filenames
@@ -970,67 +949,27 @@ def delete_tracks():
 @app.route('/logout')
 @login_required
 def logout():
+    """Log out the current user"""
     logout_user()
-    flash("You have logged out.", "info")
     return redirect(url_for('index'))
-
-@app.route('/test')
-def test():
-    """Render the test page"""
-    return render_template('test.html')
 
 @app.route('/remove_artwork', methods=['POST'])
 @login_required
 @admin_required
 def remove_artwork():
     """Remove artwork from a track"""
-    try:
-        data = request.json
-        track_id = data.get('track_id')
-        artwork_type = data.get('artwork_type')
+    track_id = request.form.get('track_id')
+    track = Track.query.get(track_id)
+    
+    if track and track.artwork_filename:
+        artwork_path = os.path.join(app.config['UPLOAD_FOLDER'], 'artwork', track.artwork_filename)
+        if os.path.exists(artwork_path):
+            os.remove(artwork_path)
         
-        if not track_id or not artwork_type:
-            return jsonify({
-                'success': False,
-                'message': 'Missing required parameters'
-            }), 400
-            
-        track = Track.query.get_or_404(track_id)
-        
-        if artwork_type == 'primary':
-            # Delete the old artwork file if it exists
-            if track.artwork and track.artwork != "No Artwork":
-                old_artwork_path = os.path.join(app.config['UPLOAD_FOLDER'], track.artwork)
-                if os.path.exists(old_artwork_path):
-                    os.remove(old_artwork_path)
-                track.artwork = "No Artwork"
-                
-        elif artwork_type == 'secondary':
-            # Delete the old secondary artwork file if it exists
-            if track.artwork_secondary and track.artwork_secondary != "No Secondary Artwork":
-                old_secondary_path = os.path.join(app.config['UPLOAD_FOLDER'], track.artwork_secondary)
-                if os.path.exists(old_secondary_path):
-                    os.remove(old_secondary_path)
-                track.artwork_secondary = "No Secondary Artwork"
-        else:
-            return jsonify({
-                'success': False,
-                'message': 'Invalid artwork type'
-            }), 400
-            
+        track.artwork_filename = None
         db.session.commit()
         
-        return jsonify({
-            'success': True,
-            'message': f'{artwork_type.capitalize()} artwork removed successfully'
-        })
-        
-    except Exception as e:
-        print(f"Error removing artwork: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': f'Error removing artwork: {str(e)}'
-        }), 500
+    return redirect(url_for('admin_panel'))
 
 if __name__ == '__main__':
     with app.app_context():

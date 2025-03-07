@@ -51,11 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Check file size (15MB limit)
-            if (file.size > 15 * 1024 * 1024) {
-                showError('File is too large. Please select a file under 15MB');
-                return;
-            }
+            // File size check removed
 
             selectedFile = file;
             fileMsg.textContent = file.name;

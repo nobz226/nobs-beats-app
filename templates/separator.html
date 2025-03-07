@@ -5,25 +5,25 @@
     <h1 class="text-title"><span class="word">Stem</span> <span class="word">Separator</span></h1>
 </div>
 
-<h2>Extract Drums, Bass, Vocals and Melody</h2>
+<h2 class="subtitle">Extract Drums, Bass, Vocals and Melody</h2>
 
 <div class="separator-container">
     <div class="separator-form">
         <div class="notice">
             <i class="fas fa-info-circle"></i>
-            For best results, use MP3 files under 15MB
+            For best results, use MP3 files
         </div>
         
         <div class="file-drop-area">
             <input type="file" id="audio-file" accept="audio/*" class="file-input">
-            <div class="file-icon">
+            <div class="file-icon separator-file-icon">
                 <i class="fas fa-cloud-upload-alt"></i>
             </div>
             <div class="file-msg">Drag & drop audio file or click to select</div>
             <div class="file-name"></div>
         </div>
 
-        <button id="separate-btn" class="btn" disabled>
+        <button id="separate-btn" disabled>
             <span class="btn-text">Separate Stems</span>
             <i class="fas fa-layer-group"></i>
         </button>
@@ -134,246 +134,6 @@
 
 {% endblock %}
 
-{% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Elements
-        const fileInput = document.getElementById('audio-file');
-        const fileDropArea = document.querySelector('.file-drop-area');
-        const fileName = document.querySelector('.file-name');
-        const separateBtn = document.getElementById('separate-btn');
-        const separationStatus = document.querySelector('.separation-status');
-        const progressBar = document.querySelector('.separator-progress');
-        const statusText = document.querySelector('.separator-status-text');
-        const stemsSection = document.querySelector('.stems-section');
-        
-        // File upload handling
-        fileInput.addEventListener('change', handleFileSelect);
-        
-        fileDropArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('drag-over');
-        });
-        
-        fileDropArea.addEventListener('dragleave', function() {
-            this.classList.remove('drag-over');
-        });
-        
-        fileDropArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('drag-over');
-            this.classList.add('file-dropped');
-            
-            if (e.dataTransfer.files.length) {
-                fileInput.files = e.dataTransfer.files;
-                handleFileSelect();
-            }
-            
-            setTimeout(() => {
-                this.classList.remove('file-dropped');
-            }, 1000);
-        });
-        
-        function handleFileSelect() {
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                
-                // Check if it's an audio file
-                if (!file.type.match('audio.*')) {
-                    showNotification('Please select an audio file', 'error');
-                    return;
-                }
-                
-                // Check file size (15MB limit)
-                if (file.size > 15 * 1024 * 1024) {
-                    showNotification('File size exceeds 15MB limit', 'error');
-                    return;
-                }
-                
-                fileName.textContent = file.name;
-                separateBtn.disabled = false;
-                
-                // Add success animation
-                fileDropArea.classList.add('file-success');
-                setTimeout(() => {
-                    fileDropArea.classList.remove('file-success');
-                }, 1000);
-            }
-        }
-        
-        // Separation process
-        separateBtn.addEventListener('click', function() {
-            if (fileInput.files.length === 0) return;
-            
-            // Show separation status
-            separationStatus.style.display = 'block';
-            separateBtn.disabled = true;
-            
-            // Simulate separation process (in a real app, this would be an API call)
-            let progress = 0;
-            statusText.textContent = 'Preparing audio...';
-            
-            const interval = setInterval(() => {
-                progress += Math.random() * 5;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    completeProcess();
-                }
-                
-                // Update progress bar
-                progressBar.style.width = `${progress}%`;
-                
-                // Update status text based on progress
-                if (progress < 25) {
-                    statusText.textContent = 'Analyzing audio...';
-                } else if (progress < 50) {
-                    statusText.textContent = 'Separating drums...';
-                } else if (progress < 75) {
-                    statusText.textContent = 'Separating vocals...';
-                } else {
-                    statusText.textContent = 'Finalizing stems...';
-                }
-            }, 200);
-            
-            function completeProcess() {
-                statusText.textContent = 'Separation complete!';
-                
-                // Show stems section with animation
-                setTimeout(() => {
-                    stemsSection.style.display = 'grid';
-                    
-                    // Animate each stem card
-                    const stemCards = document.querySelectorAll('.stem-card');
-                    stemCards.forEach((card, index) => {
-                        card.style.opacity = '0';
-                        card.style.transform = 'translateY(20px)';
-                        
-                        setTimeout(() => {
-                            card.style.transition = 'all 0.5s ease';
-                            card.style.opacity = '1';
-                            card.style.transform = 'translateY(0)';
-                        }, 100 * index);
-                    });
-                    
-                    // Set up audio visualizers
-                    setupVisualizers();
-                    
-                    // In a real app, you would set the audio sources here
-                    // For demo purposes, we'll use a sample audio
-                    const audioElements = document.querySelectorAll('.audio-player audio');
-                    audioElements.forEach(audio => {
-                        // This would be replaced with actual stem URLs
-                        // audio.src = `/static/samples/${audio.parentElement.parentElement.dataset.stem}.mp3`;
-                    });
-                    
-                    // Set up download buttons
-                    setupDownloadButtons();
-                }, 500);
-            }
-        });
-        
-        // Set up audio visualizers
-        function setupVisualizers() {
-            const audioElements = document.querySelectorAll('.audio-player audio');
-            
-            audioElements.forEach(audio => {
-                const visualizer = audio.parentElement.querySelector('.audio-visualizer');
-                const bars = visualizer.querySelectorAll('.bar');
-                
-                audio.addEventListener('play', function() {
-                    visualizer.classList.add('active');
-                    animateBars(bars);
-                });
-                
-                audio.addEventListener('pause', function() {
-                    visualizer.classList.remove('active');
-                });
-                
-                audio.addEventListener('ended', function() {
-                    visualizer.classList.remove('active');
-                });
-            });
-        }
-        
-        function animateBars(bars) {
-            bars.forEach(bar => {
-                const height = Math.floor(Math.random() * 50) + 10;
-                const duration = Math.floor(Math.random() * 1.5) + 0.5;
-                bar.style.height = `${height}px`;
-                bar.style.animationDuration = `${duration}s`;
-            });
-            
-            if (document.querySelector('.audio-player audio:playing')) {
-                requestAnimationFrame(() => animateBars(bars));
-            }
-        }
-        
-        // Set up download buttons
-        function setupDownloadButtons() {
-            const downloadButtons = document.querySelectorAll('.download-btn');
-            
-            downloadButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const stemType = this.parentElement.dataset.stem;
-                    
-                    // In a real app, this would download the actual file
-                    // For demo purposes, we'll show a notification
-                    showNotification(`Downloading ${stemType} stem...`, 'success');
-                    
-                    // Add click animation
-                    this.classList.add('clicked');
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 300);
-                });
-            });
-        }
-        
-        // Notification function
-        function showNotification(message, type = 'info') {
-            // Check if notification container exists, if not create it
-            let notificationContainer = document.querySelector('.notification-container');
-            if (!notificationContainer) {
-                notificationContainer = document.createElement('div');
-                notificationContainer.className = 'notification-container';
-                document.body.appendChild(notificationContainer);
-            }
-            
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            
-            // Add icon based on type
-            let icon = 'info-circle';
-            if (type === 'success') icon = 'check-circle';
-            if (type === 'error') icon = 'exclamation-circle';
-            
-            notification.innerHTML = `
-                <i class="fas fa-${icon}"></i>
-                <span>${message}</span>
-            `;
-            
-            // Add to container
-            notificationContainer.appendChild(notification);
-            
-            // Animate in
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
-            
-            // Remove after delay
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
-            }, 3000);
-        }
-    });
-</script>
-{% endblock %}
-
 {% block extra_css %}
 <style>
     .audio-visualizer {
@@ -451,17 +211,19 @@
         background-color: rgba(76, 175, 80, 0.1);
     }
     
-    .file-icon {
-        font-size: 3rem;
-        color: var(--primary-color);
-        margin-bottom: 15px;
-        opacity: 0.8;
-        transition: all 0.3s ease;
+    /* Updated to match analyzer.css styling */
+    .file-icon.separator-file-icon {
+        font-size: 2.5rem !important;
+        color: rgba(255, 255, 255, 0.5) !important;
+        margin-bottom: 1rem !important;
+        opacity: 1 !important;
+        transition: all 0.3s ease !important;
     }
     
-    .file-drop-area:hover .file-icon {
-        transform: translateY(-5px);
-        opacity: 1;
+    .file-drop-area:hover .file-icon.separator-file-icon {
+        color: var(--primary-color) !important;
+        transform: translateY(-5px) !important;
+        opacity: 1 !important;
     }
     
     .stem-icon {

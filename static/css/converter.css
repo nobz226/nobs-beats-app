@@ -151,12 +151,13 @@ h2 {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    margin-bottom: 1.5rem;
 }
 
 .format-btn {
     padding: 0.8rem 1.5rem;
     background: rgba(255, 255, 255, 0.1);
-    border: none;
+    border: 2px solid transparent;
     border-radius: 8px;
     color: rgba(255, 255, 255, 0.8);
     font-size: 1rem;
@@ -165,6 +166,10 @@ h2 {
     flex: 1;
     min-width: 80px;
     font-weight: 500;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
 }
 
 .format-btn:hover {
@@ -177,6 +182,8 @@ h2 {
     background: var(--primary-color);
     color: #ffffff;
     box-shadow: 0 4px 15px rgba(252, 66, 66, 0.3);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Convert button styling */
