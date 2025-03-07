@@ -664,25 +664,54 @@
         const nextBtn = document.getElementById('next-btn');
         const indicators = document.querySelectorAll('.indicator');
         
-        console.log("Total cards:", cards.length);
-        
         let currentIndex = 0;
         let cardsPerView = window.innerWidth <= 768 ? 1 : 3;
         const maxIndex = Math.ceil(cards.length / cardsPerView) - 1;
         
-        console.log("Cards per view:", cardsPerView);
-        console.log("Max index:", maxIndex);
+        // Auto-scroll configuration
+        const autoScrollDelay = 5000; // 5 seconds between slides
+        let autoScrollInterval;
         
-        // Function to update carousel position
+        // Function to move to next slide with looping
+        function nextSlide() {
+            if (currentIndex >= maxIndex) {
+                // Loop back to start
+                currentIndex = 0;
+            } else {
+                currentIndex++;
+            }
+            updateCarousel();
+        }
+        
+        // Function to move to previous slide with looping
+        function prevSlide() {
+            if (currentIndex <= 0) {
+                // Loop to end
+                currentIndex = maxIndex;
+            } else {
+                currentIndex--;
+            }
+            updateCarousel();
+        }
+        
+        // Start auto-scroll
+        function startAutoScroll() {
+            stopAutoScroll(); // Clear any existing interval
+            autoScrollInterval = setInterval(nextSlide, autoScrollDelay);
+        }
+        
+        // Stop auto-scroll
+        function stopAutoScroll() {
+            if (autoScrollInterval) {
+                clearInterval(autoScrollInterval);
+            }
+        }
+        
+        // Update carousel position (modified to handle looping)
         function updateCarousel(animate = true) {
             const cardWidth = cards[0].offsetWidth;
             const gap = parseInt(window.getComputedStyle(cardsContainer).columnGap || "32");
-            
-            // Calculate the total width of cards to move
             const moveDistance = currentIndex * (cardWidth + gap) * cardsPerView;
-            
-            console.log("Moving by:", moveDistance, "px");
-            console.log("Current index:", currentIndex);
             
             if (animate) {
                 cardsContainer.style.transition = 'transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
@@ -694,42 +723,64 @@
             
             // Update indicators
             document.querySelectorAll('.indicator').forEach((indicator, index) => {
-                if (index === currentIndex) {
-                    indicator.classList.add('active');
-                } else {
-                    indicator.classList.remove('active');
-                }
+                indicator.classList.toggle('active', index === currentIndex);
             });
             
-            // Update button states
-            prevBtn.style.opacity = currentIndex === 0 ? '0.5' : '1';
-            nextBtn.style.opacity = currentIndex === maxIndex ? '0.5' : '1';
-            prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex === maxIndex;
+            // Update button states (optional since we're looping)
+            prevBtn.style.opacity = '1';
+            nextBtn.style.opacity = '1';
+            prevBtn.disabled = false;
+            nextBtn.disabled = false;
         }
         
-        // Event listeners for navigation buttons
+        // Modified event listeners
         prevBtn.addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                updateCarousel();
-            }
+            prevSlide();
+            stopAutoScroll();
+            startAutoScroll(); // Reset auto-scroll timer
         });
         
         nextBtn.addEventListener('click', () => {
-            if (currentIndex < maxIndex) {
-                currentIndex++;
-                updateCarousel();
-            }
+            nextSlide();
+            stopAutoScroll();
+            startAutoScroll(); // Reset auto-scroll timer
         });
         
-        // Event listeners for indicators
+        // Modified indicator listeners
         document.querySelectorAll('.indicator').forEach((indicator, index) => {
             indicator.addEventListener('click', () => {
                 currentIndex = index;
                 updateCarousel();
+                stopAutoScroll();
+                startAutoScroll(); // Reset auto-scroll timer
             });
         });
+        
+        // Pause auto-scroll when hovering over carousel
+        cardsContainer.addEventListener('mouseenter', stopAutoScroll);
+        cardsContainer.addEventListener('mouseleave', startAutoScroll);
+        
+        // Modified touch support
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        cardsContainer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            stopAutoScroll();
+        }, false);
+        
+        cardsContainer.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const swipeThreshold = 50;
+            
+            if (touchEndX < touchStartX - swipeThreshold) {
+                nextSlide();
+            } else if (touchEndX > touchStartX + swipeThreshold) {
+                prevSlide();
+            }
+            
+            startAutoScroll(); // Reset auto-scroll timer
+        }, false);
         
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -747,29 +798,9 @@
             updateCarousel(false);
         });
         
-        // Initialize carousel
+        // Initialize carousel and start auto-scroll
         updateCarousel(false);
-        
-        // Add touch swipe support
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        cardsContainer.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
-        
-        cardsContainer.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            const swipeThreshold = 50;
-            
-            if (touchEndX < touchStartX - swipeThreshold && currentIndex < maxIndex) {
-                currentIndex++;
-                updateCarousel();
-            } else if (touchEndX > touchStartX + swipeThreshold && currentIndex > 0) {
-                currentIndex--;
-                updateCarousel();
-            }
-        }, false);
+        startAutoScroll();
     });
 </script>
 {% endblock %}
