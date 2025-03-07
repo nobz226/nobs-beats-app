@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% from 'components/hero.html' import hero %}
 
 {% block content %}
 <div class="hero-section">
@@ -9,7 +8,7 @@
     </div>
 </div>
 
-<div class="chat-container">
+<div class="chat-container content-section">
     <div class="chat-controls">
         <button id="newChatBtn">New Chat</button>
         <button id="stopResponseBtn" style="display: none;">Stop Response</button>
@@ -35,4 +34,12 @@
         <button class="chip" data-question="Explain music theory basics">Music theory basics</button>
     </div>
 </div>
+
+<!-- Add a spacer div -->
+<div class="guides-bottom-spacer"></div>
 {% endblock %}
+
+
+
+
+

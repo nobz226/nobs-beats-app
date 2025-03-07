@@ -84,6 +84,9 @@ document.addEventListener('DOMContentLoaded', function() {
         isWaitingForResponse = true;
         shouldStopTyping = false;
 
+        // Show stop button when sending message
+        stopResponseBtn.style.display = 'block';
+
         // Add user message to chat
         addMessage(message, true);
         chatInput.value = '';
@@ -114,13 +117,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 addMessage(data.answer);
             }
 
+            // Hide stop button after response is complete
+            stopResponseBtn.style.display = 'none';
+
         } catch (error) {
             console.error('Error:', error);
             removeLoading();
             if (!shouldStopTyping) {
                 addMessage('Sorry, I encountered an error. Please try again in a moment.');
             }
+            // Hide stop button on error
+            stopResponseBtn.style.display = 'none';
         }
+
+        isWaitingForResponse = false;
     }
 
     // Event listeners
@@ -157,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         shouldStopTyping = true;
         isWaitingForResponse = false;
+        stopResponseBtn.style.display = 'none';
         
         chatMessages.innerHTML = `
             <div class="bot-message">

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div class="hero-section">
     <div class="title-container">
@@ -7,7 +8,7 @@
     </div>
 </div>
 
-<div class="about-container">
+<div class="about-container content-section">
     <!-- Mission section moved to the beginning -->
     <div class="feature-card mission-card">
         <div class="mission-content">
@@ -65,6 +66,17 @@
         </div>
     </div>
 </div>
+
+<div class="tools-section alternate-section">
+    <!-- All existing tools section content remains exactly the same -->
+</div>
+
+<div class="contact-section content-section">
+    <!-- All existing contact section content remains exactly the same -->
+</div>
+
+<!-- Add bottom spacer -->
+<div class="about-bottom-spacer"></div>
 {% endblock %}
 
 {% block extra_js %}
@@ -98,3 +110,8 @@
     });
 </script>
 {% endblock %}
+
+
+
+
+
