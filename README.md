@@ -1,15 +1,16 @@
 # Music Production Toolkit
 
-A comprehensive web application offering various audio processing tools for music producers, beatmakers, and artists.
+A comprehensive web application offering various audio processing tools for music producers, beatmakers, and artists, featuring my own beats and remixes.
 
 ![Music Production Toolkit](static/images/bg3.png)
 
 ## Features
 
-### 🎵 Audio Showcase
-- Browse and play uploaded tracks
+### 🎵 Beats and Remixes
+- Browse and play my original beats and remixes
 - Responsive audio player with vinyl spinning animation
-- Sort by name, date, or play count
+- Track likes and play count tracking
+- Global audio player with visualizer
 
 ### 🔬 Audio Analysis
 - Analyze audio files to determine key and tempo
@@ -26,7 +27,7 @@ A comprehensive web application offering various audio processing tools for musi
 - Simple drag-and-drop interface
 - Fast processing with automatic download
 
-### 📹 YouTube Downloader
+### 📹 YouTube to Audio
 - Extract audio from YouTube videos or playlists
 - Select desired output format
 - Batch conversion supported
@@ -35,6 +36,12 @@ A comprehensive web application offering various audio processing tools for musi
 - Interactive AI chatbot (Alex) for music production advice
 - Instant answers to music production questions
 - Tips on beatmaking, mixing, and music theory
+
+### 🎨 Design Features
+- Responsive design for mobile and desktop
+- Custom vinyl loading animation
+- Modern gradient effects and CRT-style animations
+- Dark theme optimized for producers
 
 ## Tech Stack
 
@@ -49,8 +56,9 @@ A comprehensive web application offering various audio processing tools for musi
 - **AI Integration**: LLaMA 3.3 70B via Together API
 - **Frontend**: 
   - JavaScript (Vanilla)
-  - Custom CSS
-  - Responsive design for mobile and desktop
+  - Custom CSS with modern animations
+  - Responsive design
+  - Global audio player with visualizer
 
 ## Installation
 
@@ -112,6 +120,11 @@ music-production-toolkit/
 │
 ├── static/                # Static files
 │   ├── css/               # CSS stylesheets
+│   │   ├── base.css     # Base styles
+│   │   ├── hero.css     # Hero section styles
+│   │   ├── navigation.css # Navigation styles
+│   │   ├── audio-player.css # Audio player styles
+│   │   └── ...         # Other style files
 │   ├── js/                # JavaScript files
 │   ├── fonts/             # Custom fonts
 │   ├── images/            # Images and graphics
@@ -119,14 +132,16 @@ music-production-toolkit/
 │   └── converted/         # Processed audio files
 │
 └── templates/             # HTML templates
-    ├── home.html          # Homepage template
-    ├── showcase.html      # Track showcase template
-    ├── analyzer.html      # Audio analysis template
-    ├── separator.html     # Stem separator template
-    ├── converter.html     # Format converter template
-    ├── youtube.html       # YouTube downloader template
-    ├── guides.html        # Production guides template
-    └── admin.html         # Admin panel template
+    ├── base.html       # Base template with global player
+    ├── home.html       # Homepage template
+    ├── about.html      # About page template
+    ├── showcase.html   # Track showcase template
+    ├── analyzer.html   # Audio analysis template
+    ├── separator.html  # Stem separator template
+    ├── converter.html  # Format converter template
+    ├── youtube.html    # YouTube downloader template
+    ├── guides.html     # Production guides template
+    └── admin.html      # Admin panel template
 ```
 
 ## Usage
@@ -147,13 +162,11 @@ music-production-toolkit/
 3. Click "Convert"
 4. Download the converted file
 
-### YouTube Downloader
+### YouTube to Audio
 1. Paste a YouTube URL (video or playlist)
-2. Click "Fetch"
-3. Select videos to convert
-4. Choose the output format
-5. Click "Convert"
-6. Download the audio files
+2. Select the output format
+3. Click "Convert"
+4. Download the audio file
 
 ### AI Production Guide
 1. Type a question about music production
@@ -179,6 +192,11 @@ music-production-toolkit/
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Connect With Me
+
+- [YouTube](https://www.youtube.com/@nobz_beats7894)
+- [SoundCloud](https://soundcloud.com/user-621182531)
 
 ## Acknowledgments
 
