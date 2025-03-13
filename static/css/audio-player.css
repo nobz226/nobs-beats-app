@@ -4,7 +4,8 @@
 .global-play-btn,
 .global-stop-btn,
 .global-restart-btn,
-.global-repeat-btn {
+.global-repeat-btn,
+.global-toggle-btn {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     outline: none;
@@ -28,9 +29,15 @@
     transform: translateY(100%);
     height: auto;
     min-height: 90px;
+    box-sizing: border-box;
+}
+
+/* Show the button even when player is not active */
+#global-audio-player:not(.active) .global-player-controls,
+#global-audio-player:not(.active) .global-player-info,
+#global-audio-player:not(.active) audio {
     visibility: hidden;
     opacity: 0;
-    box-sizing: border-box;
 }
 
 #global-audio-player.active {
@@ -38,6 +45,62 @@
     animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     visibility: visible;
     opacity: 1;
+}
+
+#global-audio-player.hidden {
+    transform: translateY(calc(100% - 25px));
+}
+
+#global-audio-player.hidden .global-player-info,
+#global-audio-player.hidden .global-player-controls {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#global-audio-player.hidden .global-toggle-btn {
+    opacity: 1;
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 960;
+}
+
+.global-toggle-btn {
+    background: rgba(252, 66, 66, 0.2);
+    border: 1px solid rgba(252, 66, 66, 0.5);
+    color: var(--text-color);
+    cursor: pointer;
+    width: 50px;
+    height: 25px;
+    border-radius: 10px 10px 0 0;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+    z-index: 951;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), left 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    bottom: 0;
+}
+
+.global-toggle-btn:hover {
+    background: rgba(252, 66, 66, 0.3);
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.global-toggle-btn:active {
+    transform: translateX(-50%);
+}
+
+.global-toggle-btn i {
+    font-size: 14px;
+    transition: var(--transition-normal);
+    color: var(--primary-color);
 }
 
 @keyframes slideUp {
@@ -350,63 +413,7 @@
 /* Media Queries */
 @media (max-width: 768px) {
     #global-audio-player {
-        padding: 8px 15px;
-        min-height: 80px;
-    }
-    
-    .global-player-controls {
-        gap: 10px;
-    }
-    
-    .global-player-controls button {
-        width: 35px;
-        height: 35px;
-    }
-    
-    .global-player-controls button i {
-        font-size: 16px;
-    }
-    
-    .global-play-btn i {
-        font-size: 18px !important;
-    }
-    
-    .artwork-container {
-        width: calc(var(--global-artwork-size-mobile) * 1.5);
-        height: calc(var(--global-artwork-size-mobile) * 1.5);
-    }
-    
-    #global-audio-player .artwork-container {
-        width: calc(var(--global-artwork-size-mobile) * 1.5);
-        height: calc(var(--global-artwork-size-mobile) * 1.5);
-    }
-    
-    .track-name {
-        font-size: 0.9rem;
-    }
-    
-    .progress-container {
-        height: 4px;
-        margin: 6px 0;
-    }
-    
-    .visualizer-container {
-        top: -20px;
-        height: 20px;
-    }
-    
-    .visualizer-bar {
-        max-width: 1.5px;
-        margin: 0;
-    }
-    
-    .time-info {
-        font-size: 0.7rem;
-    }
-}
-
-@media (max-width: 480px) {
-    #global-audio-player {
+        padding: 8px 10px;
         min-height: 70px;
     }
     
@@ -417,6 +424,75 @@
     .global-player-controls button {
         width: 30px;
         height: 30px;
+    }
+    
+    .global-player-controls button i {
+        font-size: 14px;
+    }
+    
+    .global-play-btn i {
+        font-size: 16px !important;
+    }
+    
+    .artwork-container {
+        width: calc(var(--global-artwork-size) * 1.2);
+        height: calc(var(--global-artwork-size) * 1.2);
+    }
+    
+    #global-audio-player .artwork-container {
+        width: calc(var(--global-artwork-size) * 1.2);
+        height: calc(var(--global-artwork-size) * 1.2);
+    }
+    
+    .track-name {
+        font-size: 14px;
+    }
+    
+    .progress-container {
+        height: 20px;
+    }
+    
+    .visualizer-container {
+        height: 14px;
+    }
+    
+    .visualizer-bar {
+        width: 2px;
+    }
+    
+    .time-info {
+        font-size: 11px;
+    }
+    
+    /* Toggle button mobile styles */
+    .global-toggle-btn {
+        width: 40px;
+        height: 20px;
+    }
+    
+    /* When player is fully visible */
+    #global-audio-player.active:not(.hidden) ~ .global-toggle-btn {
+        bottom: 70px;
+    }
+    
+    #global-audio-player.hidden {
+        transform: translateY(calc(100% - 35px));
+    }
+}
+
+@media (max-width: 480px) {
+    #global-audio-player {
+        padding: 5px 8px;
+        min-height: 60px;
+    }
+    
+    .global-player-controls {
+        gap: 2px;
+    }
+    
+    .global-player-controls button {
+        width: 26px;
+        height: 26px;
     }
     
     .global-player-info {
@@ -430,21 +506,39 @@
     }
     
     .track-name {
-        font-size: 0.8rem;
+        font-size: 12px;
     }
     
     .progress-container {
-        margin: 4px 0;
+        height: 18px;
     }
     
     .visualizer-container {
-        top: -15px;
-        height: 15px;
+        height: 12px;
     }
     
     .visualizer-bar {
-        max-width: 1px;
-        margin: 0;
+        width: 1px;
+    }
+
+    /* Toggle button mobile styles */
+    .global-toggle-btn {
+        width: 36px;
+        height: 18px;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .global-toggle-btn i {
+        font-size: 12px;
+    }
+    
+    #global-audio-player.hidden {
+        transform: translateY(calc(100% - 25px));
+    }
+    
+    /* When player is fully visible */
+    #global-audio-player.active:not(.hidden) ~ .global-toggle-btn {
+        bottom: 60px;
     }
 }
 
@@ -550,4 +644,41 @@
     0% { box-shadow: 0 0 0 0 rgba(252, 66, 66, 0.4); }
     70% { box-shadow: 0 0 0 3px rgba(252, 66, 66, 0); }
     100% { box-shadow: 0 0 0 0 rgba(252, 66, 66, 0); }
+}
+
+/* State-specific positions */
+#global-audio-player.active:not(.hidden) ~ .global-toggle-btn {
+    bottom: 90px;
+}
+
+#global-audio-player.hidden ~ .global-toggle-btn,
+#global-audio-player:not(.active) ~ .global-toggle-btn {
+    bottom: 0;
+}
+
+/* Add a pulse animation for the toggle button */
+@keyframes pulseButton {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.4);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 -4px 10px rgba(252, 66, 66, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.4);
+    }
+}
+
+.pulse-animation {
+    animation: pulseButton 0.5s ease-in-out;
+}
+
+/* Make sure the toggle button is always visible with !important */
+.global-toggle-btn {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }

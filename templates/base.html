@@ -54,6 +54,16 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        
+        /* Ensure toggle button is visible immediately without waiting for JS */
+        .global-toggle-btn {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 951 !important;
+            background: rgba(252, 66, 66, 0.2) !important;
+            border: 1px solid rgba(252, 66, 66, 0.5) !important;
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -71,6 +81,9 @@
             <div class="loading-text">Loading<span>.</span><span>.</span><span>.</span></div>
         </div>
     </div>
+
+    <!-- Player toggle button positioned outside the player for always-visible state -->
+    <button class="global-toggle-btn" title="Show Player"><i class="fas fa-chevron-up"></i></button>
 
     <div id="global-audio-player">
         <div class="global-player-controls">
@@ -176,8 +189,55 @@
     <script src="{{ url_for('static', filename='js/title-animation.js') }}"></script>
 
     <script>
-        // Preloader animation
+        // Make toggle button visible immediately before any scripts run
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOMContentLoaded fired - page is loading");
+            
+            // Make toggle button visible immediately
+            const initialToggleBtn = document.querySelector('.global-toggle-btn');
+            if (initialToggleBtn) {
+                initialToggleBtn.style.display = 'flex';
+                initialToggleBtn.style.visibility = 'visible';
+                initialToggleBtn.style.opacity = '1';
+                
+                // Force correct positioning based on player state
+                const audioPlayer = document.getElementById('global-audio-player');
+                if (audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                    // Responsive positioning
+                    if (window.innerWidth <= 480) {
+                        initialToggleBtn.style.left = 'calc(100% - 60px)';
+                        initialToggleBtn.style.bottom = '60px';
+                    } else if (window.innerWidth <= 768) {
+                        initialToggleBtn.style.left = 'calc(100% - 80px)';
+                        initialToggleBtn.style.bottom = '70px';
+                    } else {
+                        initialToggleBtn.style.left = 'calc(100% - 100px)';
+                        initialToggleBtn.style.bottom = '90px';
+                    }
+                    initialToggleBtn.style.transform = 'translateX(0)';
+                } else {
+                    initialToggleBtn.style.bottom = '0';
+                    initialToggleBtn.style.left = '50%';
+                    initialToggleBtn.style.transform = 'translateX(-50%)';
+                }
+            }
+            
+            // Add a basic fallback if anything fails
+            setTimeout(function() {
+                if (document.body.style.display === 'none' || document.body.innerHTML === '') {
+                    console.log("Emergency fix: forcing body to display");
+                    document.body.style.display = 'block';
+                }
+                
+                // Double check toggle button visibility
+                const fallbackToggleBtn = document.querySelector('.global-toggle-btn');
+                if (fallbackToggleBtn) {
+                    fallbackToggleBtn.style.display = 'flex';
+                    fallbackToggleBtn.style.visibility = 'visible';
+                    fallbackToggleBtn.style.opacity = '1';
+                }
+            }, 2000);
+            
             setTimeout(function() {
                 document.getElementById('preloader').style.opacity = '0';
                 setTimeout(function() {
@@ -185,12 +245,48 @@
                 }, 500);
             }, 800);
             
+            // Always make sure the toggle button is visible
+            const mainToggleBtn = document.querySelector('.global-toggle-btn');
+            if (mainToggleBtn) {
+                mainToggleBtn.style.display = 'flex';
+                mainToggleBtn.style.visibility = 'visible';
+                mainToggleBtn.style.opacity = '1';
+                
+                // Force correct positioning based on player state
+                const audioPlayer = document.getElementById('global-audio-player');
+                if (audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                    // Responsive positioning
+                    if (window.innerWidth <= 480) {
+                        mainToggleBtn.style.left = 'calc(100% - 60px)';
+                        mainToggleBtn.style.bottom = '60px';
+                    } else if (window.innerWidth <= 768) {
+                        mainToggleBtn.style.left = 'calc(100% - 80px)';
+                        mainToggleBtn.style.bottom = '70px';
+                    } else {
+                        mainToggleBtn.style.left = 'calc(100% - 100px)';
+                        mainToggleBtn.style.bottom = '90px';
+                    }
+                    mainToggleBtn.style.transform = 'translateX(0)';
+                } else {
+                    mainToggleBtn.style.bottom = '0';
+                    mainToggleBtn.style.left = '50%';
+                    mainToggleBtn.style.transform = 'translateX(-50%)';
+                }
+            }
+            
             // Check if there's a saved audio state and show the player if needed
             const savedState = sessionStorage.getItem("audioState");
             if (savedState) {
                 const state = JSON.parse(savedState);
                 if (state.src) {
                     document.getElementById('global-audio-player').classList.add('active');
+                    
+                    // Apply hidden state if it exists in the saved state
+                    if (state.isPlayerHidden) {
+                        document.getElementById('global-audio-player').classList.add('hidden');
+                    } else {
+                        document.getElementById('global-audio-player').classList.remove('hidden');
+                    }
                 }
             }
             
@@ -198,12 +294,102 @@
             setTimeout(function() {
                 const audioPlayer = document.getElementById('global-audio-player');
                 const globalAudio = document.getElementById('global-audio');
+                const delayedToggleBtn = document.querySelector('.global-toggle-btn');
+                
+                // Always make the toggle button visible
+                if (delayedToggleBtn) {
+                    delayedToggleBtn.style.display = 'flex';
+                    
+                    // Force correct positioning based on player state
+                    if (audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                        // Responsive positioning
+                        if (window.innerWidth <= 480) {
+                            delayedToggleBtn.style.left = 'calc(100% - 60px)';
+                            delayedToggleBtn.style.bottom = '60px';
+                        } else if (window.innerWidth <= 768) {
+                            delayedToggleBtn.style.left = 'calc(100% - 80px)';
+                            delayedToggleBtn.style.bottom = '70px';
+                        } else {
+                            delayedToggleBtn.style.left = 'calc(100% - 100px)';
+                            delayedToggleBtn.style.bottom = '90px';
+                        }
+                        delayedToggleBtn.style.transform = 'translateX(0)';
+                    } else {
+                        delayedToggleBtn.style.bottom = '0';
+                        delayedToggleBtn.style.left = '50%';
+                        delayedToggleBtn.style.transform = 'translateX(-50%)';
+                    }
+                }
                 
                 if (globalAudio && globalAudio.src && globalAudio.src !== window.location.href) {
                     audioPlayer.classList.add('active');
+                    
+                    // By default, start with the player hidden
+                    if (!sessionStorage.getItem("audioState")) {
+                        audioPlayer.classList.add('hidden');
+                    }
+                    
                     console.log("Forcing audio player visibility");
                 }
             }, 1000);
+            
+            // Add event listener for toggle button
+            const btnWithListener = document.querySelector('.global-toggle-btn');
+            if (btnWithListener) {
+                btnWithListener.addEventListener('click', function() {
+                    const audioPlayer = document.getElementById('global-audio-player');
+                    
+                    // Update button position after a short delay to allow for transitions
+                    setTimeout(function() {
+                        if (audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                            btnWithListener.style.bottom = '90px';
+                            
+                            // Responsive positioning
+                            if (window.innerWidth <= 480) {
+                                btnWithListener.style.left = 'calc(100% - 60px)';
+                                btnWithListener.style.bottom = '60px';
+                            } else if (window.innerWidth <= 768) {
+                                btnWithListener.style.left = 'calc(100% - 80px)';
+                                btnWithListener.style.bottom = '70px';
+                            } else {
+                                btnWithListener.style.left = 'calc(100% - 100px)';
+                            }
+                            
+                            btnWithListener.style.transform = 'translateX(0)';
+                        } else {
+                            btnWithListener.style.bottom = '0';
+                            btnWithListener.style.left = '50%';
+                            btnWithListener.style.transform = 'translateX(-50%)';
+                        }
+                    }, 50);
+                });
+            }
+            
+            // Function to update button position based on screen size
+            function updateButtonPosition() {
+                const toggleBtn = document.querySelector('.global-toggle-btn');
+                const audioPlayer = document.getElementById('global-audio-player');
+                
+                if (toggleBtn && audioPlayer.classList.contains('active') && !audioPlayer.classList.contains('hidden')) {
+                    if (window.innerWidth <= 480) {
+                        toggleBtn.style.left = 'calc(100% - 60px)';
+                        toggleBtn.style.bottom = '60px';
+                    } else if (window.innerWidth <= 768) {
+                        toggleBtn.style.left = 'calc(100% - 80px)';
+                        toggleBtn.style.bottom = '70px';
+                    } else {
+                        toggleBtn.style.left = 'calc(100% - 100px)';
+                        toggleBtn.style.bottom = '90px';
+                    }
+                    toggleBtn.style.transform = 'translateX(0)';
+                }
+            }
+            
+            // Listen for window resize events
+            window.addEventListener('resize', updateButtonPosition);
+            
+            // Initial call to set correct position
+            updateButtonPosition();
         });
         
         // Progress bar hover effect

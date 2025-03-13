@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     repeatBtn: document.querySelector(".global-repeat-btn"),
     prevBtn: document.querySelector(".global-prev-btn"),
     nextBtn: document.querySelector(".global-next-btn"),
+    toggleBtn: document.querySelector(".global-toggle-btn"),
     progressBar: document.querySelector(".progress-bar"),
     progressContainer: document.querySelector(".progress-container"),
     trackName: document.querySelector(".track-name"),
@@ -24,11 +25,53 @@ document.addEventListener("DOMContentLoaded", () => {
   // State
   let currentTrackIndex = -1;
   let isRepeatEnabled = false;
+  let isPlayerHidden = true; // Default state is hidden
   let trackList = [];
   let wasPlaying = false;
 
   // Initialize repeat button state
   player.repeatBtn.style.opacity = "0.5";
+
+  // Initialize toggle button icon
+  updateToggleButtonIcon();
+
+  // Function to update toggle button icon based on player state
+  function updateToggleButtonIcon() {
+    if (player.toggleBtn) {
+      if (isPlayerHidden) {
+        player.toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+        player.toggleBtn.title = "Show Player";
+      } else {
+        player.toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+        player.toggleBtn.title = "Hide Player";
+      }
+      
+      // Ensure visibility
+      player.toggleBtn.style.display = 'flex';
+      player.toggleBtn.style.opacity = '1';
+    }
+  }
+
+  // Toggle player visibility
+  player.toggleBtn.addEventListener("click", (e) => {
+    e.preventDefault(); // Prevent any default behavior
+    e.stopPropagation(); // Prevent event bubbling
+    
+    // Always allow the user to show/hide the player even if no track is loaded
+    if (isPlayerHidden) {
+      // Unhide player
+      player.playerContainer.classList.add("active");
+      player.playerContainer.classList.remove("hidden");
+      isPlayerHidden = false;
+    } else {
+      // Hide player
+      player.playerContainer.classList.add("hidden");
+      isPlayerHidden = true;
+    }
+    
+    updateToggleButtonIcon();
+    saveState();
+  });
 
   // Function to check if artwork should spin (has 'vinyl' in the name)
   const shouldArtworkSpin = (artworkElement) => {
@@ -134,16 +177,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Save current state
   const saveState = () => {
-    const state = {
-      src: player.audio.src,
-      trackName: player.trackName.textContent,
-      currentTime: player.audio.currentTime,
-      isPlaying: !player.audio.paused,
-      artworkSrc: player.audio.src ? player.artworkImage.src : null,
-      currentTrackIndex: currentTrackIndex,
-      isRepeatEnabled: isRepeatEnabled,
-    };
-    sessionStorage.setItem("audioState", JSON.stringify(state));
+    if (player.audio.src) {
+      const state = {
+        src: player.audio.src,
+        trackName: player.trackName.textContent,
+        currentTime: player.audio.currentTime,
+        isPlaying: !player.audio.paused,
+        isRepeatEnabled: isRepeatEnabled,
+        isPlayerHidden: isPlayerHidden,
+        currentTrackIndex: currentTrackIndex,
+        artworkSrc: player.artworkImage.style.display !== "none" ? player.artworkImage.src : "",
+      };
+      sessionStorage.setItem("audioState", JSON.stringify(state));
+    } else {
+      sessionStorage.removeItem("audioState");
+    }
   };
 
   // Handle visibility change
@@ -171,6 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
       player.trackName.textContent = state.trackName;
       currentTrackIndex = state.currentTrackIndex;
       isRepeatEnabled = state.isRepeatEnabled;
+      isPlayerHidden = state.isPlayerHidden !== undefined ? state.isPlayerHidden : true;
       player.repeatBtn.style.opacity = isRepeatEnabled ? "1" : "0.5";
 
       // Restore artwork if available
@@ -192,6 +241,15 @@ document.addEventListener("DOMContentLoaded", () => {
       // Show player if there was a track
       if (state.src) {
         player.playerContainer.classList.add("active");
+        
+        // Apply hidden state if needed
+        if (isPlayerHidden) {
+          player.playerContainer.classList.add("hidden");
+        } else {
+          player.playerContainer.classList.remove("hidden");
+        }
+        
+        updateToggleButtonIcon();
       }
 
       // Function to handle playback restoration
@@ -260,8 +318,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Show the player
+      // Show the player and unhide it when a track is loaded
       player.playerContainer.classList.add("active");
+      player.playerContainer.classList.remove("hidden");
+      isPlayerHidden = false;
+      updateToggleButtonIcon();
 
       // Update play button icon
       player.playBtn.classList.add("playing");
