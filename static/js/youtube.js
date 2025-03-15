@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let selectedFormat = null;
   let videos = [];
   let isConverting = false;
+  let currentSessionId = null; // Track the current session ID
 
   // Format selection
   formatBtns.forEach((btn) => {
@@ -110,7 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
       statusText.textContent = "Starting conversion...";
       progressBar.style.width = "0%";
 
-      // Create conversion session
+      // Create a conversion session
       const sessionResponse = await fetch("/youtube/create-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -124,7 +125,21 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error("Failed to create conversion session");
       }
 
-      const { sessionId } = await sessionResponse.json();
+      const sessionData = await sessionResponse.json();
+      if (!sessionData.success) {
+        throw new Error(sessionData.error || "Failed to create session");
+      }
+
+      currentSessionId = sessionData.sessionId;
+      console.log(`Created session: ${currentSessionId}`);
+      
+      // Update video elements with session ID
+      selectedVideos.forEach(video => {
+        const videoElement = document.querySelector(`[data-video-id="${video.id}"]`);
+        if (videoElement) {
+          videoElement.setAttribute('data-session-id', currentSessionId);
+        }
+      });
 
       // Convert each video
       for (let i = 0; i < selectedVideos.length; i++) {
@@ -140,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            sessionId,
+            sessionId: currentSessionId,
             videoId: video.id,
             format: selectedFormat,
           }),
@@ -209,6 +224,13 @@ document.addEventListener("DOMContentLoaded", function () {
   function createVideoElement(video, index) {
     const div = document.createElement("div");
     div.className = "video-item";
+    div.setAttribute('data-video-id', video.id);
+    
+    // Add session ID if available
+    if (currentSessionId) {
+      div.setAttribute('data-session-id', currentSessionId);
+    }
+    
     div.innerHTML = `
             <input type="checkbox" class="video-checkbox" data-index="${index}">
             <div class="video-thumbnail">
@@ -233,7 +255,36 @@ document.addEventListener("DOMContentLoaded", function () {
   // Cleanup on page unload
   window.addEventListener("beforeunload", async () => {
     try {
-      await fetch("/youtube/cleanup", { method: "POST" });
+      console.log("Running cleanup on page unload");
+      
+      // Get all active session IDs
+      const sessionIds = [];
+      document.querySelectorAll('[data-session-id]').forEach(el => {
+        const sessionId = el.getAttribute('data-session-id');
+        if (sessionId) {
+          sessionIds.push(sessionId);
+        }
+      });
+      
+      if (sessionIds.length > 0) {
+        console.log(`Cleaning up sessions: ${sessionIds.join(', ')}`);
+        
+        // Use sendBeacon for reliable delivery during page unload
+        const formData = new FormData();
+        formData.append('cleanAll', 'true');
+        
+        // Add each session ID
+        sessionIds.forEach(sessionId => {
+          formData.append('sessionId', sessionId);
+        });
+        
+        const success = navigator.sendBeacon("/youtube/cleanup", formData);
+        console.log(`Cleanup beacon sent: ${success}`);
+      } else {
+        console.log("No active sessions to clean up");
+        const success = navigator.sendBeacon("/youtube/cleanup", new FormData());
+        console.log(`General cleanup beacon sent: ${success}`);
+      }
     } catch (error) {
       console.error("Cleanup error:", error);
     }

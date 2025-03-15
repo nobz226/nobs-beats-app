@@ -79,11 +79,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Check if file is audio
             if (!file.type.startsWith('audio/')) {
-                showError('Please select an audio file');
+                showError('Please select an audio file (MP3, WAV, FLAC, or M4A)');
                 return;
             }
-
-            // File size check removed
+            
+            // Check if file extension is supported
+            const fileName = file.name.toLowerCase();
+            if (!fileName.endsWith('.mp3') && !fileName.endsWith('.wav') && 
+                !fileName.endsWith('.flac') && !fileName.endsWith('.m4a')) {
+                showError('Please select an MP3, WAV, FLAC, or M4A file');
+                return;
+            }
 
             selectedFile = file;
             fileMsg.textContent = file.name;
@@ -172,26 +178,30 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             progressBar.style.width = '50%';
             
-            const response = await fetch('/separator', {
+            const response = await fetch('/audio/separator', {
                 method: 'POST',
                 body: formData
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
+                const data = await response.json();
                 throw new Error(data.error || 'Separation failed');
             }
 
+            const data = await response.json();
+            
             if (data.success) {
                 progressBar.style.width = '100%';
                 statusText.textContent = 'Separation complete! Click to download stems.';
+                currentSessionId = data.session_id;
                 updateStemsSection(data);
             } else {
                 throw new Error(data.error || 'Separation failed');
             }
         } catch (error) {
             console.error('Separation error:', error);
+            progressBar.style.width = '100%';
+            statusText.style.color = '#ff4081';
             showError(error.message || 'Error during separation');
         } finally {
             separateBtn.disabled = false;
@@ -201,7 +211,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Clean up when leaving page
     window.addEventListener('beforeunload', function() {
         if (currentSessionId) {
-            navigator.sendBeacon(`/cleanup_stems/${currentSessionId}`);
+            console.log(`Cleaning up session: ${currentSessionId}`);
+            // Use sendBeacon for reliable delivery during page unload
+            const success = navigator.sendBeacon(`/audio/cleanup_stems/${currentSessionId}`);
+            console.log(`Cleanup beacon sent: ${success}`);
         }
     });
 });

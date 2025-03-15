@@ -12,9 +12,24 @@ window.addEventListener('DOMContentLoaded', function() {
     var downloadSection = document.querySelector('.download-section');
     var downloadBtn = document.querySelector('.download-btn');
     
+    console.log('Converter JS loaded');
+    console.log('Elements found:', {
+        fileInput: !!fileInput,
+        formatButtons: !!formatButtons,
+        convertButton: !!convertButton,
+        fileNameDisplay: !!fileNameDisplay,
+        dropArea: !!dropArea,
+        progressBar: !!progressBar,
+        statusText: !!statusText,
+        conversionStatus: !!conversionStatus,
+        downloadSection: !!downloadSection,
+        downloadBtn: !!downloadBtn
+    });
+    
     // Variables to track state
     var hasFile = false;
     var selectedFormat = '';
+    var selectedFile = null;
     
     // Function to check if convert button should be enabled
     function updateButtonState() {
@@ -28,8 +43,24 @@ window.addEventListener('DOMContentLoaded', function() {
     // Handle file selection
     fileInput.onchange = function() {
         if (this.files && this.files.length > 0) {
+            var file = this.files[0];
+            
+            // Check if file is audio
+            if (!file.type.startsWith('audio/')) {
+                showError('Please select an audio file (MP3, WAV, or FLAC)');
+                return;
+            }
+            
+            // Check if file extension is supported
+            var fileName = file.name.toLowerCase();
+            if (!fileName.endsWith('.mp3') && !fileName.endsWith('.wav') && !fileName.endsWith('.flac')) {
+                showError('Please select an MP3, WAV, or FLAC file');
+                return;
+            }
+            
             hasFile = true;
-            fileNameDisplay.textContent = this.files[0].name;
+            selectedFile = file;
+            fileNameDisplay.textContent = file.name;
             updateButtonState();
         }
     };
@@ -75,12 +106,46 @@ window.addEventListener('DOMContentLoaded', function() {
     
     dropArea.addEventListener('drop', function(e) {
         if (e.dataTransfer.files.length > 0) {
+            var file = e.dataTransfer.files[0];
+            
+            // Check if file is audio
+            if (!file.type.startsWith('audio/')) {
+                showError('Please select an audio file (MP3, WAV, or FLAC)');
+                return;
+            }
+            
+            // Check if file extension is supported
+            var fileName = file.name.toLowerCase();
+            if (!fileName.endsWith('.mp3') && !fileName.endsWith('.wav') && !fileName.endsWith('.flac')) {
+                showError('Please select an MP3, WAV, or FLAC file');
+                return;
+            }
+            
             fileInput.files = e.dataTransfer.files;
             hasFile = true;
-            fileNameDisplay.textContent = e.dataTransfer.files[0].name;
+            selectedFile = file;
+            fileNameDisplay.textContent = file.name;
             updateButtonState();
         }
     }, false);
+    
+    // Show error message
+    function showError(message) {
+        conversionStatus.style.display = 'block';
+        downloadSection.style.display = 'none';
+        statusText.textContent = message;
+        statusText.style.color = '#ff4081';
+        progressBar.style.width = '0%';
+        
+        // Reset file selection after a delay
+        setTimeout(function() {
+            fileInput.value = '';
+            hasFile = false;
+            selectedFile = null;
+            fileNameDisplay.textContent = '';
+            updateButtonState();
+        }, 3000);
+    }
     
     // Handle convert button click
     convertButton.onclick = function(e) {
@@ -92,7 +157,7 @@ window.addEventListener('DOMContentLoaded', function() {
         
         // Create form data
         var formData = new FormData();
-        formData.append('audio_file', fileInput.files[0]);
+        formData.append('audio_file', selectedFile);
         formData.append('target_format', selectedFormat);
         
         // Show conversion status
@@ -108,23 +173,31 @@ window.addEventListener('DOMContentLoaded', function() {
         
         console.log('Sending conversion request...');
         
+        // Add a timestamp to the URL to prevent caching
+        var timestamp = new Date().getTime();
+        
         // Send request
-        fetch('/converter', {
+        fetch(`/audio/converter?t=${timestamp}`, {
             method: 'POST',
             body: formData
         })
         .then(function(response) {
             console.log('Response received:', response.status);
+            console.log('Response headers:', [...response.headers.entries()]);
+            
             if (!response.ok) {
-                return response.json().then(function(data) {
-                    throw new Error(data.error || 'Server error');
-                });
+                throw new Error('Server error: ' + response.status);
             }
-            return response.json();
+            
+            // Try to parse as JSON
+            return response.json().catch(function(err) {
+                console.error('JSON parse error:', err);
+                throw new Error('Failed to parse server response');
+            });
         })
         .then(function(data) {
             console.log('Data received:', data);
-            if (data.success) {
+            if (data && data.success) {
                 // Show completion
                 progressBar.style.width = '100%';
                 statusText.textContent = 'Conversion complete!';
@@ -142,6 +215,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     setTimeout(function() {
                         fileInput.value = '';
                         hasFile = false;
+                        selectedFile = null;
                         fileNameDisplay.textContent = '';
                         formatButtons.forEach(function(btn) {
                             btn.classList.remove('selected');
@@ -155,23 +229,14 @@ window.addEventListener('DOMContentLoaded', function() {
                     }, 1000);
                 };
             } else {
-                showError(data.error || 'Conversion failed');
+                showError(data && data.error ? data.error : 'Conversion failed');
             }
         })
         .catch(function(error) {
             console.error('Conversion error:', error);
             showError(error.message || 'Error during conversion');
+            // Re-enable convert button to try again
+            convertButton.removeAttribute('disabled');
         });
     };
-    
-    // Show error message
-    function showError(message) {
-        statusText.textContent = message;
-        statusText.style.color = '#ff4081';
-        progressBar.style.width = '0%';
-        downloadSection.style.display = 'none';
-        
-        // Enable convert button to try again
-        convertButton.removeAttribute('disabled');
-    }
 });

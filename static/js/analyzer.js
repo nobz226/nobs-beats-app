@@ -54,29 +54,53 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleDrop(e) {
         const dt = e.dataTransfer;
         const files = dt.files;
-        handleFiles(files);
+        
+        if (files.length > 0) {
+            handleFiles(files);
+        }
     }
 
     function handleFileSelect(e) {
         const files = e.target.files;
-        handleFiles(files);
+        
+        if (files.length > 0) {
+            handleFiles(files);
+        }
     }
 
     function handleFiles(files) {
-        if (files.length > 0) {
-            selectedFile = files[0];
-            fileMsg.textContent = selectedFile.name;
-            analyzeBtn.disabled = false;
-            console.log('File selected:', selectedFile.name, selectedFile.type);
+        const file = files[0];
+        
+        // Check if file is audio
+        if (!file.type.startsWith('audio/') && 
+            !file.name.endsWith('.mid') && 
+            !file.name.endsWith('.midi') && 
+            !file.name.endsWith('.xml') && 
+            !file.name.endsWith('.mxl') && 
+            !file.name.endsWith('.abc')) {
+            showError('Please select an audio file');
+            return;
         }
+        
+        selectedFile = file;
+        fileMsg.textContent = file.name;
+        analyzeBtn.disabled = false;
     }
 
     function showError(message) {
         statusText.textContent = message;
         statusText.style.color = '#ff4081';
         progressBar.style.width = '0%';
+        analysisStatus.style.display = 'block';
         resultsSection.style.display = 'none';
-        console.error('Analysis error:', message);
+        
+        // Reset file selection after a delay
+        setTimeout(() => {
+            fileInput.value = '';
+            selectedFile = null;
+            fileMsg.textContent = '';
+            analyzeBtn.disabled = true;
+        }, 3000);
     }
 
     analyzeBtn.addEventListener('click', async () => {
@@ -102,22 +126,29 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Starting analysis...');
             progressBar.style.width = '50%';
             
-            const response = await fetch('/analyze', {
+            // Add a timestamp to the URL to prevent caching
+            const timestamp = new Date().getTime();
+            const response = await fetch(`/audio/analyze?t=${timestamp}`, {
                 method: 'POST',
                 body: formData
             });
             
             console.log('Response received:', response.status);
-
+            console.log('Response headers:', [...response.headers.entries()]);
+            
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Analysis failed');
+                throw new Error('Server error: ' + response.status);
             }
+            
+            // Try to parse as JSON
+            const data = await response.json().catch(error => {
+                console.error('JSON parse error:', error);
+                throw new Error('Failed to parse server response');
+            });
+            
+            console.log('Parsed data:', data);
 
-            const data = await response.json();
-            console.log('Analysis data received:', data);
-
-            if (data.success) {
+            if (data && data.success) {
                 progressBar.style.width = '100%';
                 statusText.textContent = 'Analysis complete!';
                 
@@ -136,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     analysisStatus.style.display = 'none';
                 }, 3000);
             } else {
-                showError(data.error || 'Analysis failed');
+                showError(data && data.error ? data.error : 'Analysis failed');
             }
         } catch (error) {
             console.error('Analysis error:', error);

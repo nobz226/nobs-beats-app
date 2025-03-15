@@ -4,8 +4,6 @@ from extensions import db
 from models import Track, User
 from forms import TrackForm
 import os
-import librosa
-import numpy as np
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -22,32 +20,31 @@ from dotenv import load_dotenv
 from together import Together
 import ssl
 import shutil
-import gc
-import torch
-from demucs.pretrained import get_model
-from demucs.apply import apply_model
-import torchaudio
 import warnings
 import traceback
-import demucs.separate
+from utils import ensure_directory_exists, save_uploaded_file, cleanup_file, analyze_audio_file, convert_audio
+from services import AudioConversionService, StemSeparationService
+from config import config
+from routes import register_blueprints
 
 warnings.filterwarnings("ignore")
 ssl._create_default_https_context = ssl._create_unverified_context
 
-
+# Load environment variables
 load_dotenv()
-client = Together(api_key=os.getenv('TOGETHER_API_KEY'))  # Pass the API key explicitly
 
+# Initialize Together API client
+client = Together(api_key=os.getenv('TOGETHER_API_KEY'))
+
+# Create Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///music.db'
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-app.config['CONVERTED_FOLDER'] = 'static/converted'
-os.makedirs(app.config['CONVERTED_FOLDER'], exist_ok=True)
-app.config['YOUTUBE_FOLDER'] = 'static/youtube'  # Add this configuration
-os.makedirs(app.config['YOUTUBE_FOLDER'], exist_ok=True)  # Add this line
 
+# Load configuration
+app_config = config['development']  # Change to 'production' for production
+app.config.from_object(app_config)
+app_config.init_app(app)
+
+# Initialize database
 db.init_app(app)
 
 # Initialize Flask-Login
@@ -55,7 +52,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'admin'
 
+# Active conversion sessions storage
+ACTIVE_SESSIONS = {}
 
+# Register blueprints
+register_blueprints(app)
 
 # Admin required decorator
 def admin_required(f):
@@ -85,55 +86,7 @@ YDL_OPTS_BASE = {
     'prefer_ffmpeg': True,
 }
 
-# Active conversion sessions storage
-ACTIVE_SESSIONS = {}
-SESSION_TIMEOUT = 300  # 5 minutes in seconds
-
-def ensure_directories():
-    required_dirs = [
-        app.config['UPLOAD_FOLDER'],
-        app.config['CONVERTED_FOLDER'],
-        app.config['YOUTUBE_FOLDER']
-    ]
-    for directory in required_dirs:
-        Path(directory).mkdir(parents=True, exist_ok=True)
-        print(f"Ensured directory exists: {directory}")
-
-# Call this after app initialization
-with app.app_context():
-    ensure_directories()
-
-def cleanup_session(session_id):
-    """Clean up session files and data"""
-    try:
-        session_dir = os.path.join(app.config['CONVERTED_FOLDER'], session_id)
-        if os.path.exists(session_dir):
-            shutil.rmtree(session_dir)
-        if session_id in ACTIVE_SESSIONS:
-            del ACTIVE_SESSIONS[session_id]
-    except Exception as e:
-        print(f"Error cleaning up session {session_id}: {str(e)}")
-
-def convert_audio(input_path, output_path, output_format):
-    """Convert audio file to specified format using ffmpeg"""
-    try:
-        result = subprocess.run([
-            'ffmpeg', '-i', input_path,
-            '-y',  # Overwrite output file if it exists
-            output_path
-        ], check=True, capture_output=True, text=True)
-        print(f"Conversion output: {result.stdout}")
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"FFmpeg conversion error: {e.stderr}")
-        return False
-    except Exception as e:
-        print(f"General conversion error: {str(e)}")
-        return False
-
 # Routes
-
-import gc  # Add this import at the top
 
 @app.route('/youtube')
 def youtube_converter():
@@ -204,7 +157,7 @@ def create_conversion_session():
         }
         
         # Schedule cleanup
-        Timer(SESSION_TIMEOUT, cleanup_session, args=[session_id]).start()
+        Timer(app.config['SESSION_TIMEOUT'], cleanup_session, args=[session_id]).start()
         
         return jsonify({
             'success': True,
@@ -349,16 +302,51 @@ def download_converted(session_id, filename):
 
 @app.route('/youtube/cleanup', methods=['POST'])
 def cleanup_expired_sessions():
-    """Clean up expired sessions"""
+    """Clean up expired sessions or specific session"""
     try:
+        print("=== YOUTUBE CLEANUP ENDPOINT CALLED ===")
+        
+        # Check if a specific session ID was provided
+        session_id = request.json.get('sessionId') if request.is_json else request.form.get('sessionId')
+        
+        if session_id:
+            print(f"Cleaning up specific session: {session_id}")
+            if session_id in ACTIVE_SESSIONS:
+                cleanup_session(session_id)
+                return jsonify({
+                    'success': True,
+                    'message': f'Cleaned up session {session_id}'
+                })
+            else:
+                print(f"Session not found: {session_id}")
+                return jsonify({
+                    'success': False,
+                    'message': f'Session {session_id} not found'
+                })
+        
+        # If no specific session, clean up expired sessions
         current_time = time.time()
         expired_sessions = [
             session_id for session_id, session in ACTIVE_SESSIONS.items()
-            if current_time - session['created_at'] > SESSION_TIMEOUT
+            if current_time - session['created_at'] > app.config['SESSION_TIMEOUT']
         ]
         
+        print(f"Found {len(expired_sessions)} expired sessions to clean up")
         for session_id in expired_sessions:
             cleanup_session(session_id)
+
+        # Check if we should clean up all sessions (e.g., on application shutdown)
+        clean_all = request.json.get('cleanAll') if request.is_json else request.form.get('cleanAll')
+        if clean_all == 'true' or clean_all == True:
+            print("Cleaning up all sessions")
+            all_sessions = list(ACTIVE_SESSIONS.keys())
+            for session_id in all_sessions:
+                cleanup_session(session_id)
+            
+            return jsonify({
+                'success': True,
+                'message': f'Cleaned up all {len(all_sessions)} sessions'
+            })
 
         return jsonify({
             'success': True,
@@ -367,263 +355,64 @@ def cleanup_expired_sessions():
 
     except Exception as e:
         print(f"Cleanup error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': f"Cleanup failed: {str(e)}"
         }), 500
 
-@app.route('/analyze', methods=['GET', 'POST'])
-def analyze_audio():
-    if request.method == 'POST':
-        if 'audio_file' not in request.files:
-            return jsonify({
-                'success': False,
-                'error': 'No file selected'
-            }), 400
-
-        audio_file = request.files['audio_file']
-        if audio_file.filename == '':
-            return jsonify({
-                'success': False,
-                'error': 'No file selected'
-            }), 400
-
-        # Check file extension
-        allowed_extensions = ['.mp3', '.wav', '.flac', '.mid', '.midi', '.xml', '.mxl', '.abc']
-        file_ext = os.path.splitext(audio_file.filename.lower())[1]
-        if file_ext not in allowed_extensions:
-            return jsonify({
-                'success': False,
-                'error': f'Unsupported file format. Please use one of: {", ".join(allowed_extensions)}'
-            }), 400
-
-        file_uuid = str(uuid.uuid4())
-        original_filename = secure_filename(audio_file.filename)
-        input_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_uuid}_{original_filename}")
+def cleanup_session(session_id):
+    """Clean up session files and data"""
+    try:
+        print(f"=== CLEANUP_SESSION CALLED for session {session_id} ===")
         
-        try:
-            # Save the file
-            audio_file.save(input_path)
-            print(f"File saved: {input_path}")
+        # Clean up session directory in converted folder
+        session_dir = os.path.join(app.config['CONVERTED_FOLDER'], session_id)
+        print(f"Checking if session directory exists: {session_dir}")
+        if os.path.exists(session_dir):
+            print(f"Removing session directory: {session_dir}")
+            shutil.rmtree(session_dir)
+            print(f"Successfully removed session directory: {session_dir}")
+        
+        # Clean up any files in the YouTube folder
+        youtube_dir = app.config['YOUTUBE_FOLDER']
+        print(f"Checking for files in YouTube folder: {youtube_dir}")
+        if os.path.exists(youtube_dir):
+            for filename in os.listdir(youtube_dir):
+                if session_id in filename:
+                    file_path = os.path.join(youtube_dir, filename)
+                    print(f"Removing YouTube file: {file_path}")
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                    print(f"Successfully removed: {file_path}")
+        
+        # Clean up any files in the uploads folder
+        uploads_dir = app.config['UPLOAD_FOLDER']
+        print(f"Checking for files in uploads folder: {uploads_dir}")
+        if os.path.exists(uploads_dir):
+            for filename in os.listdir(uploads_dir):
+                if session_id in filename:
+                    file_path = os.path.join(uploads_dir, filename)
+                    print(f"Removing upload file: {file_path}")
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                    print(f"Successfully removed: {file_path}")
+        
+        # Remove session from active sessions
+        if session_id in ACTIVE_SESSIONS:
+            print(f"Removing session from ACTIVE_SESSIONS: {session_id}")
+            del ACTIVE_SESSIONS[session_id]
+            print(f"Successfully removed session from ACTIVE_SESSIONS")
             
-            # Free up memory from the raw audio file
-            del audio_file
-            gc.collect()
-            
-            try:
-                # Load the audio file with librosa using a lower sample rate and mono
-                print(f"Loading audio file: {input_path}")
-                y, sr = librosa.load(input_path, sr=22050, mono=True)
-                
-                # Get onset envelope with reduced complexity
-                print("Calculating onset envelope")
-                onset_env = librosa.onset.onset_strength(y=y, sr=sr, hop_length=512)
-                
-                # Free up memory from raw audio data
-                del y
-                gc.collect()
-                
-                # Dynamic tempo detection with simplified parameters
-                print("Detecting tempo")
-                dtempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr, aggregate=None,
-                                          hop_length=512, start_bpm=120)
-                
-                # Calculate tempos more efficiently
-                tempo_frequencies = np.bincount(np.round(dtempo).astype(int))
-                possible_tempos = np.where(tempo_frequencies > 0)[0]
-                
-                # Free up memory
-                del onset_env
-                del dtempo
-                gc.collect()
-                
-                # Find the most likely tempo
-                tempo_candidates = []
-                for tempo in possible_tempos:
-                    score = (tempo_frequencies[tempo] if tempo < len(tempo_frequencies) else 0)
-                    score += (tempo_frequencies[tempo//2] if tempo//2 < len(tempo_frequencies) else 0)
-                    score += (tempo_frequencies[tempo*2] if tempo*2 < len(tempo_frequencies) else 0)
-                    tempo_candidates.append((tempo, score))
-                
-                # Get the best tempo
-                if not tempo_candidates:
-                    best_tempo = 120  # Default if no tempo detected
-                else:
-                    best_tempo = sorted(tempo_candidates, key=lambda x: x[1], reverse=True)[0][0]
-                
-                # Load audio again for key detection with very low duration
-                print("Detecting key")
-                y, sr = librosa.load(input_path, sr=22050, duration=30, mono=True)
-                
-                # Detect key with simplified parameters
-                chroma = librosa.feature.chroma_cqt(y=y, sr=sr, hop_length=512, n_chroma=12)
-                key_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-                key = key_names[np.argmax(np.mean(chroma, axis=1))]
-                
-                # Clean up
-                del y
-                del chroma
-                gc.collect()
-                
-                print(f"Analysis complete: Tempo={best_tempo}, Key={key}")
-                
-                # Remove input file
-                if os.path.exists(input_path):
-                    os.remove(input_path)
-                    print(f"Removed input file: {input_path}")
-                
-                return jsonify({
-                    'success': True,
-                    'tempo': int(round(float(best_tempo))),
-                    'key': key
-                })
-            
-            except Exception as e:
-                print(f"Error during audio analysis: {str(e)}")
-                print(traceback.format_exc())
-                return jsonify({
-                    'success': False,
-                    'error': f"Error analyzing audio: {str(e)}"
-                }), 500
-                
-        except Exception as e:
-            if os.path.exists(input_path):
-                os.remove(input_path)
-            print(f"Analysis error: {str(e)}")
-            print(traceback.format_exc())
-            return jsonify({
-                'success': False,
-                'error': str(e)
-            }), 500
-        finally:
-            # Final cleanup
-            gc.collect()
-
-    latest_track = Track.query.order_by(Track.date_added.desc()).first()
-    return render_template('analyze.html', latest_track=latest_track)
-
-@app.route('/separator', methods=['GET', 'POST'])
-def stem_separator():
-   if request.method == 'POST':
-       if 'audio_file' not in request.files:
-           return jsonify({
-               'success': False,
-               'error': 'No file selected'
-           }), 400
-
-       audio_file = request.files['audio_file']
-       if audio_file.filename == '':
-           return jsonify({
-               'success': False,
-               'error': 'No file selected'
-           }), 400
-
-       # Verify file type 
-       if not audio_file.filename.lower().endswith(('.mp3', '.wav', '.m4a', '.flac')):
-           return jsonify({
-               'success': False,
-               'error': 'Invalid file type. Please upload an MP3, WAV, M4A, or FLAC file.'
-           }), 400
-
-       # Create unique filenames
-       file_uuid = str(uuid.uuid4())
-       original_filename = secure_filename(audio_file.filename)
-       input_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_uuid}_{original_filename}")
-       output_dir = file_uuid + "_" + os.path.splitext(original_filename)[0]
-       
-       try:
-           # Save input file
-           audio_file.save(input_path)
-           print(f"File saved: {input_path}")
-
-           # Clear memory
-           del audio_file
-           gc.collect()
-           
-           # Configure demucs for separation with correct parameters
-           demucs.separate.main([
-               "--mp3",
-               "-n", "htdemucs",
-               "--segment", "7",
-               "-d", "cpu",
-               "--overlap", "0.1",
-               "--out", app.config['CONVERTED_FOLDER'],
-               input_path
-           ])
-           
-           # Generate URLs for stems
-           stem_paths = {}
-           source_stems = ['drums', 'bass', 'vocals', 'other']
-           display_stems = ['drums', 'bass', 'vocals', 'melody']
-           
-           # Find output directory
-           possible_dirs = [
-               output_dir,
-               file_uuid,
-               os.path.splitext(original_filename)[0]
-           ]
-           
-           found_dir = None
-           for dir_name in possible_dirs:
-               check_path = os.path.join(app.config['CONVERTED_FOLDER'], 'htdemucs', dir_name)
-               if os.path.exists(check_path):
-                   found_dir = dir_name
-                   break
-
-           if not found_dir:
-               raise Exception("Output directory not found")
-           
-           # Get stem URLs
-           for source_stem, display_stem in zip(source_stems, display_stems):
-               stem_filename = f"{source_stem}.mp3"
-               full_path = os.path.join(app.config['CONVERTED_FOLDER'], 'htdemucs', found_dir, stem_filename)
-               if os.path.exists(full_path):
-                   relative_path = os.path.join('htdemucs', found_dir, stem_filename)
-                   stem_paths[display_stem] = url_for('static', filename=f'converted/{relative_path}')
-                   print(f"Generated URL for {display_stem} stem")
-
-           # Clean up input file
-           if os.path.exists(input_path):
-               os.remove(input_path)
-               print("Input file cleaned up")
-           
-           # Force garbage collection
-           gc.collect()
-           if torch.cuda.is_available():
-               torch.cuda.empty_cache()
-           
-           return jsonify({
-               'success': True,
-               'stems': stem_paths,
-               'session_id': found_dir
-           })
-           
-       except Exception as e:
-           # Clean up input file in case of error
-           if os.path.exists(input_path):
-               os.remove(input_path)
-           print(f"Separation error: {str(e)}")
-           print(f"Full error details: {traceback.format_exc()}")
-           return jsonify({
-               'success': False,
-               'error': 'Failed to process audio file. Please try again with a different file.'
-           }), 500
-
-   latest_track = Track.query.order_by(Track.date_added.desc()).first()
-   return render_template('separator.html', latest_track=latest_track)
-
-
-@app.route('/cleanup_stems/<session_id>', methods=['POST'])
-def cleanup_stems(session_id):
-   try:
-       output_dir = os.path.join(app.config['CONVERTED_FOLDER'], 'htdemucs', session_id)
-       if os.path.exists(output_dir):
-           shutil.rmtree(output_dir)
-           return jsonify({'success': True})
-       return jsonify({'success': True, 'message': 'Directory already cleaned'})
-   except Exception as e:
-       print(f"Cleanup error: {str(e)}")
-       return jsonify({'success': False, 'error': str(e)}), 500
+    except Exception as e:
+        print(f"Error cleaning up session {session_id}: {str(e)}")
+        import traceback
+        traceback.print_exc()
 
 @app.route('/guides')
 def guides():
@@ -690,97 +479,6 @@ def showcase():
     
     latest_track = Track.query.order_by(Track.date_added.desc()).first()
     return render_template('showcase.html', tracks=tracks, sort_by=sort_by, latest_track=latest_track)
-
-@app.route('/converter', methods=['GET', 'POST'])
-def converter():
-    if request.method == 'POST':
-        input_path = None
-        output_path = None
-        try:
-            if 'audio_file' not in request.files:
-                return jsonify({
-                    'success': False,
-                    'error': 'No file selected'
-                }), 400
-                
-            audio_file = request.files['audio_file']
-            if audio_file.filename == '':
-                return jsonify({
-                    'success': False,
-                    'error': 'No file selected'
-                }), 400
-
-            target_format = request.form.get('target_format')
-            if target_format not in ['mp3', 'wav', 'flac']:
-                return jsonify({
-                    'success': False,
-                    'error': 'Invalid format selected'
-                }), 400
-
-            # Generate unique identifier and get original filename
-            file_uuid = str(uuid.uuid4())
-            original_filename = secure_filename(audio_file.filename)
-            
-            # Save input file with UUID
-            input_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_uuid}_{original_filename}")
-            audio_file.save(input_path)
-
-            # Create output path - keep UUID for server storage but use original name for download
-            original_name = os.path.splitext(original_filename)[0]
-            output_filename = f"{original_name}.{target_format}"  # This is what user will see
-            server_output_filename = f"{file_uuid}_{output_filename}"  # This is for server storage
-            output_path = os.path.join(app.config['CONVERTED_FOLDER'], server_output_filename)
-
-            # Convert file
-            if convert_audio(input_path, output_path, target_format):
-                # Generate download URL - use original name for download
-                download_url = url_for('static', 
-                                     filename=f'converted/{server_output_filename}')
-
-                # Set up timeout for file deletion
-                def delete_file():
-                    time.sleep(15)  # Wait 15 seconds
-                    try:
-                        if os.path.exists(output_path):
-                            os.remove(output_path)
-                            print(f"Cleaned up converted file: {output_path}")
-                    except Exception as e:
-                        print(f"Error cleaning up converted file: {str(e)}")
-
-                # Start deletion timer in background
-                cleanup_thread = threading.Thread(target=delete_file)
-                cleanup_thread.daemon = True
-                cleanup_thread.start()
-
-                return jsonify({
-                    'success': True,
-                    'download_url': download_url,
-                    'filename': output_filename  # Send just the clean filename
-                })
-            else:
-                return jsonify({
-                    'success': False,
-                    'error': 'Conversion failed'
-                }), 500
-
-        except Exception as e:
-            print(f"Conversion error: {str(e)}")
-            return jsonify({
-                'success': False,
-                'error': 'Server error occurred'
-            }), 500
-        
-        finally:
-            # Clean up input file
-            if input_path and os.path.exists(input_path):
-                try:
-                    os.remove(input_path)
-                    print(f"Cleaned up input file: {input_path}")
-                except Exception as e:
-                    print(f"Error cleaning up input file: {str(e)}")
-
-    latest_track = Track.query.order_by(Track.date_added.desc()).first()
-    return render_template('converter.html', latest_track=latest_track)
 
 @app.route('/admin', methods=['GET', 'POST'])
 def login():
@@ -1048,4 +746,4 @@ if __name__ == '__main__':
             )
             db.session.add(admin_user)
             db.session.commit()
-    app.run(debug=True)
+    app.run(debug=True, port=5002)
