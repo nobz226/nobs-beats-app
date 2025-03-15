@@ -426,6 +426,7 @@
         gap: 2rem;
         transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         pointer-events: none;
+        margin: 0 auto;
     }
     
     .feature-card {
@@ -433,6 +434,11 @@
         opacity: 1;
         transition: opacity 0.5s ease, transform 0.5s ease;
         pointer-events: auto;
+        position: relative;
+        background-color: rgba(20, 20, 20, 0.3);
+        border-radius: 8px;
+        border: 1px solid rgba(40, 40, 40, 0.5);
+        overflow: hidden;
     }
     
     .card-content {
@@ -444,6 +450,7 @@
         position: relative;
         z-index: 5;
         pointer-events: auto;
+        box-sizing: border-box;
     }
 
     .card-icon {
@@ -467,7 +474,7 @@
     }
     
     .feature-card:hover {
-        transform: translateY(-15px) scale(1.02);
+        transform: translateY(-5px);
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(252, 66, 66, 0.2);
         border: 1px solid rgba(252, 66, 66, 0.3);
     }
@@ -542,6 +549,7 @@
         letter-spacing: 0.5px;
         z-index: 10;
         pointer-events: auto;
+        width: max-content;
     }
     
     .feature-link:hover {
@@ -747,7 +755,9 @@
         function updateCarousel() {
             const cardWidth = cards[0].offsetWidth;
             const gap = parseInt(window.getComputedStyle(cardsContainer).columnGap || "32");
-            const moveDistance = currentIndex * ((cardWidth + gap) * cardsPerView);
+            
+            // Calculate the exact distance to move
+            const moveDistance = currentIndex * (cardWidth * 3 + gap * 2);
             
             cardsContainer.style.transform = `translateX(-${moveDistance}px)`;
             
