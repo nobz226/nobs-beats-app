@@ -46,8 +46,9 @@
     color: #000000;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 14px;
-    font-weight: 500;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--weight-medium);
 }
 
 .chat-controls button:hover {
@@ -76,14 +77,12 @@
 }
 
 .user-message, .bot-message {
-    margin: 8px 0;
-    padding: 12px 16px;
-    border-radius: 12px;
-    max-width: 85%;
-    word-wrap: break-word;
-    font-size: 14px;
-    line-height: 1.5;
-    letter-spacing: 0.3px;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-normal);
 }
 
 .user-message {
@@ -155,14 +154,14 @@
 }
 
 #chatInput {
-    flex-grow: 1;
-    padding: 12px 16px;
-    border: 1px solid rgba(245, 245, 220, 0.1);
+    flex: 1;
+    padding: 12px 15px;
+    border: none;
     border-radius: 20px;
-    background-color: #2c2c2c;
+    background-color: rgba(255, 255, 255, 0.1);
     color: #F5F5DC;
-    font-size: 14px;
-    transition: border-color 0.3s ease;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
 }
 
 #chatInput:focus {
@@ -199,15 +198,16 @@
 }
 
 .chip {
-    padding: 8px 16px;
-    border: 1px solid rgba(245, 245, 220, 0.2);
+    padding: 8px 15px;
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
-    background-color: #2c2c2c;
-    color: #F5F5DC;
+    margin-right: 10px;
+    margin-bottom: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 13px;
-    white-space: nowrap;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--weight-medium);
 }
 
 .chip:hover {
@@ -218,17 +218,16 @@
 
 /* Add some spacing for better readability */
 .bot-message p {
-    opacity: 1;
-    transform: none;
-    animation: none;
-    margin: 8px 0;
-    line-height: 1.5;
+    margin-bottom: 10px;
+    line-height: var(--line-height-normal);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
 }
 
 /* Highlight important information */
 .bot-message strong {
-    color: #fc4242;
-    font-weight: 600;
+    font-weight: var(--weight-bold);
+    color: var(--primary-color);
 }
 
 @media (max-width: 768px) {

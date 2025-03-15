@@ -7,6 +7,7 @@
     <meta name="keywords" content="Beats and Remixes">
     <meta name="author" content="Nobz">
     <title>Nobz-Beats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typography.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hero.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navigation.css') }}">
@@ -39,8 +40,8 @@
         
         /* Subtitle animation for all pages */
         .subtitle, h2:not(.section-title) {
-            font-family: 'Agave', monospace;
-            font-size: 1.2rem;
+            font-family: var(--font-primary);
+            font-size: var(--font-size-md);
             color: #fc4242;
             margin-top: 0.5rem;
             text-align: center;

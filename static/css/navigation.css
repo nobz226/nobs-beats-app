@@ -66,8 +66,9 @@
 .loading-text {
     margin-top: 20px;
     color: #F5F5DC;
-    font-size: 18px;
-    letter-spacing: 2px;
+    font-size: var(--font-size-base);
+    font-family: var(--font-primary);
+    letter-spacing: var(--letter-spacing-wide);
 }
 
 .loading-text span {
@@ -185,10 +186,11 @@
 }
 
 .logo-text {
-    font-family: 'Agave', monospace;
-    font-size: 24px;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--weight-bold);
     color: #fc4242;
-    letter-spacing: 1px;
+    letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
     text-shadow: 0 0 10px rgba(252, 66, 66, 0.3);
 }
@@ -200,7 +202,9 @@
     text-decoration: none;
     color: #F5F5DC;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    font-size: 18px;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--weight-medium);
     transition: all 0.3s ease;
     transform: translateX(-20px);
     opacity: 0;

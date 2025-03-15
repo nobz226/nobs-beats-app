@@ -6,8 +6,9 @@
 }
 
 .text-title {
-    font-size: 3.5rem;
-    font-weight: 700;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--weight-black);
     background: linear-gradient(45deg, var(--primary-color), #ff8a8a);
     -webkit-background-clip: text;
     background-clip: text;
@@ -44,10 +45,11 @@
 
 h2 {
     text-align: center;
-    font-size: 1.5rem;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xl);
+    font-weight: var(--weight-regular);
     color: rgba(255, 255, 255, 0.8);
     margin-bottom: 3rem;
-    font-weight: 400;
     animation: fadeIn 1s ease both;
     animation-delay: 0.5s;
 }
@@ -117,16 +119,19 @@ h2 {
 }
 
 .file-msg {
-    font-size: 1.2rem;
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-regular);
     color: rgba(255, 255, 255, 0.7);
     margin-bottom: 1rem;
     transition: all 0.3s ease;
 }
 
 .file-name {
-    font-size: 0.9rem;
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--weight-medium);
     color: var(--primary-color);
-    font-weight: 500;
     margin-top: 1rem;
     word-break: break-all;
 }
@@ -143,7 +148,9 @@ h2 {
 }
 
 .format-selector label {
-    font-size: 1.1rem;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-medium);
     color: rgba(255, 255, 255, 0.9);
     margin-bottom: 0.5rem;
 }
@@ -161,12 +168,13 @@ h2 {
     border: 2px solid transparent;
     border-radius: 8px;
     color: rgba(255, 255, 255, 0.8);
-    font-size: 1rem;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--weight-medium);
     cursor: pointer;
     transition: all 0.3s ease;
     flex: 1;
     min-width: 80px;
-    font-weight: 500;
     outline: none;
     position: relative;
     overflow: hidden;
@@ -194,10 +202,11 @@ h2 {
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 1.1rem;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-semibold);
     cursor: pointer;
     transition: all 0.3s ease;
-    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -243,10 +252,11 @@ h2 {
 }
 
 .converter-status-text {
-    font-size: 1rem;
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--weight-medium);
     color: rgba(255, 255, 255, 0.8);
     margin-top: 0.5rem;
-    font-weight: 500;
 }
 
 /* Download section styling */

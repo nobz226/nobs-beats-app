@@ -2,7 +2,7 @@
 .admin-container {
     display: flex;
     gap: 12px;
-    font-family: Arial, sans-serif;
+    font-family: var(--font-body);
     padding-bottom: 120px;
     min-height: 80vh;
 }
@@ -25,7 +25,9 @@
 
 .track-actions button {
     padding: 4px 8px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
+    font-family: var(--font-primary);
+    font-weight: var(--weight-medium);
     color: #000000;
     background-color: #F5F5DC;
     border: none;
@@ -40,7 +42,7 @@
 }
 
 .admin-track-list {
-    font-family: Arial, sans-serif;
+    font-family: var(--font-body);
     background-color: #000000;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -87,7 +89,9 @@
 }
 
 .admin-track-item .track-title {
-    font-weight: bold;
+    font-family: var(--font-primary);
+    font-weight: var(--weight-semibold);
+    font-size: var(--font-size-sm);
     color: #F5F5DC;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -113,20 +117,25 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     flex-basis: 50%;
-    font-size: 14px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
 }
 
 .admin-form h2, .admin-form h4 {
+    font-family: var(--font-primary);
     color: #F5F5DC;
-    font-size: 14px;
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-semibold);
     margin-bottom: 8px;
 }
 
 .admin-form label {
     display: block;
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--weight-medium);
     color: rgba(245, 245, 220, 0.9);
     margin-bottom: 3px;
-    font-size: 12px;
 }
 
 .admin-form input,

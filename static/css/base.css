@@ -37,10 +37,6 @@
     --transition-normal: all 0.3s ease;
     --transition-slow: all 0.5s ease;
     
-    /* Fonts */
-    --font-primary: 'Agave', monospace;
-    --font-secondary: 'AnotherTag', sans-serif;
-    
     /* Borders */
     --border-radius-small: 5px;
     --border-radius-medium: 10px;
@@ -60,30 +56,7 @@
     box-sizing: border-box;
 }
 
-/* Font Face */
-@font-face {
-    font-family: 'Agave';
-    src: url('../fonts/Agave.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap; /* This helps with font loading */
-}
-
-@font-face {
-    font-family: 'AnotherTag';
-    src: url('../fonts/AnotherTag.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap; /* This helps with font loading */
-}
-
-@font-face {
-    font-family: 'FatVandals';
-    src: url('../fonts/FatVandals.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap; /* This helps with font loading */
-}
+/* Font Face - Removed and moved to typography.css */
 
 /* Selection styling */
 ::selection {
@@ -112,7 +85,6 @@
 
 /* Body and Main Layout */
 body {
-    font-family: 'Agave', sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
@@ -146,7 +118,7 @@ main {
     box-sizing: border-box;
 }
 
-/* Typography */
+/* Typography - Basic animations preserved, styling moved to typography.css */
 h1, h2 {
     opacity: 0;
     transform: translateY(30px);
@@ -160,10 +132,6 @@ p {
 }
 
 h1 {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    font-weight: bold;
-    color: var(--text-color);
     animation-delay: 0.3s;
     position: relative;
     display: inline-block;
@@ -183,20 +151,14 @@ h1::after {
 }
 
 h2 {
-    font-size: 1rem;
     margin-bottom: 40px;
     margin-top: -80px;
-    font-weight: bold;
-    color: var(--text-color);
     animation-delay: 0.3s;
 }
 
 p {
-    font-size: 1.2rem;
     margin-bottom: 20px;
-    color: var(--text-color-muted);
     animation-delay: 0.3s;
-    line-height: 1.7;
 }
 
 a {
@@ -236,7 +198,6 @@ a:hover {
     color: white;
     border: none;
     border-radius: 30px;
-    font-family: 'Agave', sans-serif;
     font-size: 1rem;
     cursor: pointer;
     transition: var(--transition-normal);

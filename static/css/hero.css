@@ -35,9 +35,12 @@
 
 .hero-title {
     margin: 0 auto;
-    font-size: 3.5rem;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--weight-black);
     color: #ffffff;
     text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-tight);
 }
 
 .hero-title .word {
@@ -52,7 +55,9 @@
 }
 
 .hero-subtitle {
-    font-size: 1.5rem;
+    font-family: var(--font-accent);
+    font-size: var(--font-size-xl);
+    font-weight: var(--weight-medium);
     color: #ffffff;
     margin-top: 1rem;
     opacity: 0;
@@ -86,10 +91,10 @@
     }
 
     .hero-title {
-        font-size: 2.5rem;
+        font-size: var(--font-size-3xl);
     }
 
     .hero-subtitle {
-        font-size: 1.2rem;
+        font-size: var(--font-size-lg);
     }
 }

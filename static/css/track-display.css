@@ -139,22 +139,25 @@
     position: relative !important;
     z-index: 2 !important;
     width: 100% !important;
-    font-family: 'Agave', sans-serif !important;
+    font-family: var(--font-body) !important;
     color: rgba(245, 245, 220, 0.9) !important;
 }
 
 .track-info h3 {
-    font-size: 1.2rem !important;
+    font-family: var(--font-primary) !important;
+    font-size: var(--font-size-md) !important;
+    font-weight: var(--weight-semibold) !important;
     color: #f6f0dc !important;
     margin-bottom: 8px !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
     overflow: hidden !important;
-    font-weight: 600 !important;
 }
 
 .track-info p {
-    font-size: 0.9rem !important;
+    font-family: var(--font-body) !important;
+    font-size: var(--font-size-sm) !important;
+    font-weight: var(--weight-regular) !important;
     margin-bottom: 0 !important;
     max-height: 2.4em !important;
     overflow: hidden !important;

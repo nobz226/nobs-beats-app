@@ -315,7 +315,9 @@
 }
 
 .track-name {
-    font-size: 1rem;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--weight-medium);
     color: var(--text-color);
     margin-bottom: 8px;
     white-space: nowrap;
@@ -394,8 +396,11 @@
 .time-info {
     display: flex;
     justify-content: space-between;
-    font-size: 0.8rem;
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--weight-regular);
     color: rgba(245, 245, 220, 0.7);
+    margin-top: 5px;
 }
 
 /* Active States */

@@ -5,8 +5,9 @@
 }
 
 .text-title {
-    font-size: 3.5rem;
-    font-weight: 700;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-4xl);
+    font-weight: var(--weight-black);
     background: linear-gradient(45deg, var(--primary-color), #ff8a8a);
     -webkit-background-clip: text;
     background-clip: text;
@@ -43,10 +44,11 @@
 
 h2 {
     text-align: center;
-    font-size: 1.5rem;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xl);
+    font-weight: var(--weight-regular);
     color: rgba(255, 255, 255, 0.8);
     margin-bottom: 3rem;
-    font-weight: 400;
     animation: fadeIn 1s ease both;
     animation-delay: 0.5s;
 }
@@ -73,14 +75,16 @@ h2 {
 
 .notice {
     background: rgba(252, 66, 66, 0.1);
-    border-left: 3px solid var(--primary-color);
-    padding: 1rem;
-    border-radius: 5px;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(252, 66, 66, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    font-weight: var(--weight-medium);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .notice i {
@@ -113,20 +117,20 @@ h2 {
 }
 
 .file-msg {
-    font-size: 1.1rem;
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-regular);
     color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .file-name {
-    font-size: 0.9rem;
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--weight-medium);
     color: var(--primary-color);
-    font-weight: 500;
-    margin-top: 0.5rem;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    margin-top: 1rem;
+    word-break: break-all;
 }
 
 #separate-btn {
@@ -135,10 +139,11 @@ h2 {
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 1.1rem;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-semibold);
     cursor: pointer;
     transition: all 0.3s ease;
-    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -186,8 +191,11 @@ h2 {
 }
 
 .separator-status-text {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-family: var(--font-body);
+    font-size: var(--font-size-base);
+    font-weight: var(--weight-medium);
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 0.5rem;
 }
 
 .stems-section {
@@ -235,9 +243,11 @@ h2 {
 }
 
 .stem-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-lg);
+    font-weight: var(--weight-semibold);
+    margin-bottom: 15px;
+    color: #ffffff;
 }
 
 .stem-card audio {
@@ -247,18 +257,21 @@ h2 {
 }
 
 .download-btn {
-    background: transparent;
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-    padding: 0.7rem 1.2rem;
-    border-radius: 5px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #ffffff;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--weight-medium);
     cursor: pointer;
-    font-size: 0.9rem;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    margin-top: auto;
+    margin-top: 15px;
 }
 
 .download-btn:hover {
