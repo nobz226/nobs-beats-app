@@ -167,7 +167,15 @@
     }
     
     .text-title {
-        margin: 20px auto 30px;
+        line-height: 1.1 !important;
+        margin-bottom: 30px !important;
+        padding-bottom: 20px !important; /* Increased padding to create more space for cursor */
+    }
+    
+    /* Ensure words are properly aligned */
+    .text-title .word {
+        display: inline-block !important;
+        vertical-align: baseline !important;
     }
     
     .tagline {
@@ -659,6 +667,14 @@
     /* Tool cards are all visible by default in the carousel */
     .tool-card {
         display: block;
+    }
+    
+    /* Fix for cursor position */
+    .text-title::after {
+        bottom: -15px !important; /* Increased negative value to position cursor much lower */
+        height: 3px !important;
+        width: 15px !important; /* Make the cursor slightly wider for better visibility */
+        transform: translateY(5px) !important; /* Additional adjustment to move cursor down */
     }
 </style>
 {% endblock %}

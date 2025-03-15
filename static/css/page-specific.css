@@ -28,13 +28,15 @@
     min-height: 60px;
     color: #ffffff; /* Ensure text is visible */
     --cursor-left: 0px; /* Initial cursor position */
-    line-height: var(--line-height-tight);
+    line-height: 1.1; /* Tighter line height for better cursor positioning */
 }
 
 /* Style for the words */
 .text-title .word {
     display: inline-block;
     position: relative;
+    vertical-align: baseline; /* Ensure proper vertical alignment */
+    padding-bottom: 5px; /* Add a bit of padding at the bottom */
 }
 
 /* ChatGPT style typing animation for each letter */
@@ -52,7 +54,7 @@
     height: 3px;
     background-color: #ffffff;
     left: var(--cursor-left);
-    bottom: 0;
+    bottom: -15px; /* Position it much lower below the text */
     animation: blinkCursor 0.8s step-end infinite;
     z-index: 10;
 }
