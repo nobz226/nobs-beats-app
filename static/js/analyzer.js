@@ -10,6 +10,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const tempoValue = document.querySelector('.tempo-value');
     const keyValue = document.querySelector('.key-value');
 
+    console.log('Analyzer JS loaded');
+    console.log('Elements found:', {
+        dropArea: !!dropArea,
+        fileInput: !!fileInput,
+        fileMsg: !!fileMsg,
+        analyzeBtn: !!analyzeBtn,
+        analysisStatus: !!analysisStatus,
+        progressBar: !!progressBar,
+        statusText: !!statusText,
+        resultsSection: !!resultsSection,
+        tempoValue: !!tempoValue,
+        keyValue: !!keyValue
+    });
+
     let selectedFile = null;
 
     // Drag and drop handlers
@@ -53,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedFile = files[0];
             fileMsg.textContent = selectedFile.name;
             analyzeBtn.disabled = false;
+            console.log('File selected:', selectedFile.name, selectedFile.type);
         }
     }
 
@@ -61,13 +76,19 @@ document.addEventListener('DOMContentLoaded', function() {
         statusText.style.color = '#ff4081';
         progressBar.style.width = '0%';
         resultsSection.style.display = 'none';
+        console.error('Analysis error:', message);
     }
 
     analyzeBtn.addEventListener('click', async () => {
-        if (!selectedFile) return;
+        console.log('Analyze button clicked');
+        if (!selectedFile) {
+            console.error('No file selected');
+            return;
+        }
 
         const formData = new FormData();
         formData.append('audio_file', selectedFile);
+        console.log('FormData created with file:', selectedFile.name);
 
         // Show analysis status
         analysisStatus.style.display = 'block';
@@ -78,11 +99,15 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsSection.style.display = 'none';
 
         try {
+            console.log('Starting analysis...');
             progressBar.style.width = '50%';
+            
             const response = await fetch('/analyze', {
                 method: 'POST',
                 body: formData
             });
+            
+            console.log('Response received:', response.status);
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -90,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const data = await response.json();
+            console.log('Analysis data received:', data);
 
             if (data.success) {
                 progressBar.style.width = '100%';

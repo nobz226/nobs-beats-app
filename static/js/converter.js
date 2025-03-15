@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded', function() {
     var statusText = document.querySelector('.converter-status-text');
     var conversionStatus = document.querySelector('.conversion-status');
     var downloadSection = document.querySelector('.download-section');
+    var downloadBtn = document.querySelector('.download-btn');
     
     // Variables to track state
     var hasFile = false;
@@ -96,9 +97,16 @@ window.addEventListener('DOMContentLoaded', function() {
         
         // Show conversion status
         conversionStatus.style.display = 'block';
+        downloadSection.style.display = 'none';
         progressBar.style.width = '0%';
         statusText.textContent = 'Converting...';
+        statusText.style.color = '#F5F5DC'; // Reset color
         convertButton.setAttribute('disabled', 'disabled');
+        
+        // Animate progress bar to show activity
+        progressBar.style.width = '50%';
+        
+        console.log('Sending conversion request...');
         
         // Send request
         fetch('/converter', {
@@ -106,6 +114,7 @@ window.addEventListener('DOMContentLoaded', function() {
             body: formData
         })
         .then(function(response) {
+            console.log('Response received:', response.status);
             if (!response.ok) {
                 return response.json().then(function(data) {
                     throw new Error(data.error || 'Server error');
@@ -114,39 +123,43 @@ window.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(function(data) {
+            console.log('Data received:', data);
             if (data.success) {
                 // Show completion
                 progressBar.style.width = '100%';
-                statusText.textContent = 'Conversion complete! Downloading...';
+                statusText.textContent = 'Conversion complete!';
                 
-                // Trigger download
-                var link = document.createElement('a');
-                link.href = data.download_url;
-                link.download = data.filename || 'converted_file';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Update download button
+                downloadBtn.href = data.download_url;
+                downloadBtn.download = data.filename || 'converted_file';
                 
-                // Reset form
-                fileInput.value = '';
-                hasFile = false;
-                fileNameDisplay.textContent = '';
-                formatButtons.forEach(function(btn) {
-                    btn.classList.remove('selected');
-                });
-                selectedFormat = '';
-                convertButton.setAttribute('disabled', 'disabled');
+                // Show download section
+                downloadSection.style.display = 'block';
                 
-                // Show success message
-                setTimeout(function() {
-                    statusText.textContent = 'Ready for next conversion';
-                    progressBar.style.width = '0%';
-                }, 3000);
+                // Add click handler for download button
+                downloadBtn.onclick = function() {
+                    // Reset form after download is initiated
+                    setTimeout(function() {
+                        fileInput.value = '';
+                        hasFile = false;
+                        fileNameDisplay.textContent = '';
+                        formatButtons.forEach(function(btn) {
+                            btn.classList.remove('selected');
+                        });
+                        selectedFormat = '';
+                        convertButton.setAttribute('disabled', 'disabled');
+                        
+                        // Hide sections
+                        downloadSection.style.display = 'none';
+                        conversionStatus.style.display = 'none';
+                    }, 1000);
+                };
             } else {
                 showError(data.error || 'Conversion failed');
             }
         })
         .catch(function(error) {
+            console.error('Conversion error:', error);
             showError(error.message || 'Error during conversion');
         });
     };
@@ -156,11 +169,9 @@ window.addEventListener('DOMContentLoaded', function() {
         statusText.textContent = message;
         statusText.style.color = '#ff4081';
         progressBar.style.width = '0%';
+        downloadSection.style.display = 'none';
         
-        // Reset form
-        fileInput.value = '';
-        hasFile = false;
-        fileNameDisplay.textContent = '';
-        convertButton.setAttribute('disabled', 'disabled');
+        // Enable convert button to try again
+        convertButton.removeAttribute('disabled');
     }
 });

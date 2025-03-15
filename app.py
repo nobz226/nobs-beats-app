@@ -388,81 +388,109 @@ def analyze_audio():
                 'error': 'No file selected'
             }), 400
 
-        # File size check removed
+        # Check file extension
+        allowed_extensions = ['.mp3', '.wav', '.flac', '.mid', '.midi', '.xml', '.mxl', '.abc']
+        file_ext = os.path.splitext(audio_file.filename.lower())[1]
+        if file_ext not in allowed_extensions:
+            return jsonify({
+                'success': False,
+                'error': f'Unsupported file format. Please use one of: {", ".join(allowed_extensions)}'
+            }), 400
 
         file_uuid = str(uuid.uuid4())
         original_filename = secure_filename(audio_file.filename)
         input_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_uuid}_{original_filename}")
         
         try:
+            # Save the file
             audio_file.save(input_path)
-            
-            # Load the audio file with librosa using a lower sample rate and mono
-            y, sr = librosa.load(input_path, sr=22050, mono=True)
+            print(f"File saved: {input_path}")
             
             # Free up memory from the raw audio file
             del audio_file
             gc.collect()
             
-            # Get onset envelope with reduced complexity
-            onset_env = librosa.onset.onset_strength(y=y, sr=sr, hop_length=512)
+            try:
+                # Load the audio file with librosa using a lower sample rate and mono
+                print(f"Loading audio file: {input_path}")
+                y, sr = librosa.load(input_path, sr=22050, mono=True)
+                
+                # Get onset envelope with reduced complexity
+                print("Calculating onset envelope")
+                onset_env = librosa.onset.onset_strength(y=y, sr=sr, hop_length=512)
+                
+                # Free up memory from raw audio data
+                del y
+                gc.collect()
+                
+                # Dynamic tempo detection with simplified parameters
+                print("Detecting tempo")
+                dtempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr, aggregate=None,
+                                          hop_length=512, start_bpm=120)
+                
+                # Calculate tempos more efficiently
+                tempo_frequencies = np.bincount(np.round(dtempo).astype(int))
+                possible_tempos = np.where(tempo_frequencies > 0)[0]
+                
+                # Free up memory
+                del onset_env
+                del dtempo
+                gc.collect()
+                
+                # Find the most likely tempo
+                tempo_candidates = []
+                for tempo in possible_tempos:
+                    score = (tempo_frequencies[tempo] if tempo < len(tempo_frequencies) else 0)
+                    score += (tempo_frequencies[tempo//2] if tempo//2 < len(tempo_frequencies) else 0)
+                    score += (tempo_frequencies[tempo*2] if tempo*2 < len(tempo_frequencies) else 0)
+                    tempo_candidates.append((tempo, score))
+                
+                # Get the best tempo
+                if not tempo_candidates:
+                    best_tempo = 120  # Default if no tempo detected
+                else:
+                    best_tempo = sorted(tempo_candidates, key=lambda x: x[1], reverse=True)[0][0]
+                
+                # Load audio again for key detection with very low duration
+                print("Detecting key")
+                y, sr = librosa.load(input_path, sr=22050, duration=30, mono=True)
+                
+                # Detect key with simplified parameters
+                chroma = librosa.feature.chroma_cqt(y=y, sr=sr, hop_length=512, n_chroma=12)
+                key_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+                key = key_names[np.argmax(np.mean(chroma, axis=1))]
+                
+                # Clean up
+                del y
+                del chroma
+                gc.collect()
+                
+                print(f"Analysis complete: Tempo={best_tempo}, Key={key}")
+                
+                # Remove input file
+                if os.path.exists(input_path):
+                    os.remove(input_path)
+                    print(f"Removed input file: {input_path}")
+                
+                return jsonify({
+                    'success': True,
+                    'tempo': int(round(float(best_tempo))),
+                    'key': key
+                })
             
-            # Free up memory from raw audio data
-            del y
-            gc.collect()
-            
-            # Dynamic tempo detection with simplified parameters
-            dtempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr, aggregate=None,
-                                      hop_length=512, start_bpm=120)
-            
-            # Calculate tempos more efficiently
-            tempo_frequencies = np.bincount(np.round(dtempo).astype(int))
-            possible_tempos = np.where(tempo_frequencies > 0)[0]
-            tempo_strengths = tempo_frequencies[possible_tempos]
-            
-            # Free up memory
-            del onset_env
-            del dtempo
-            gc.collect()
-            
-            # Find the most likely tempo
-            tempo_candidates = []
-            for tempo in possible_tempos:
-                score = (tempo_frequencies[tempo] if tempo < len(tempo_frequencies) else 0)
-                score += (tempo_frequencies[tempo//2] if tempo//2 < len(tempo_frequencies) else 0)
-                score += (tempo_frequencies[tempo*2] if tempo*2 < len(tempo_frequencies) else 0)
-                tempo_candidates.append((tempo, score))
-            
-            # Get the best tempo
-            best_tempo = sorted(tempo_candidates, key=lambda x: x[1], reverse=True)[0][0]
-            
-            # Load audio again for key detection with very low duration
-            y, sr = librosa.load(input_path, sr=22050, duration=30, mono=True)
-            
-            # Detect key with simplified parameters
-            chroma = librosa.feature.chroma_cqt(y=y, sr=sr, hop_length=512, n_chroma=12)
-            key_names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-            key = key_names[np.argmax(np.mean(chroma, axis=1))]
-            
-            # Clean up
-            del y
-            del chroma
-            gc.collect()
-            
-            # Remove input file
-            if os.path.exists(input_path):
-                os.remove(input_path)
-            
-            return jsonify({
-                'success': True,
-                'tempo': int(round(float(best_tempo))),
-                'key': key
-            })
-            
+            except Exception as e:
+                print(f"Error during audio analysis: {str(e)}")
+                print(traceback.format_exc())
+                return jsonify({
+                    'success': False,
+                    'error': f"Error analyzing audio: {str(e)}"
+                }), 500
+                
         except Exception as e:
             if os.path.exists(input_path):
                 os.remove(input_path)
             print(f"Analysis error: {str(e)}")
+            print(traceback.format_exc())
             return jsonify({
                 'success': False,
                 'error': str(e)

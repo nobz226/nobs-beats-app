@@ -11,6 +11,38 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedFile = null;
     let currentSessionId = null;
 
+    // Function to set up audio visualizers for stem cards
+    function setupAudioVisualizers() {
+        const stemCards = document.querySelectorAll('.stem-card');
+        
+        stemCards.forEach(card => {
+            const audio = card.querySelector('audio');
+            const visualizer = card.querySelector('.audio-visualizer');
+            
+            if (audio && visualizer) {
+                // Remove any existing event listeners
+                const newAudio = audio.cloneNode(true);
+                audio.parentNode.replaceChild(newAudio, audio);
+                
+                // Add event listeners for play, pause, and ended events
+                newAudio.addEventListener('play', function() {
+                    visualizer.classList.add('active');
+                });
+                
+                newAudio.addEventListener('pause', function() {
+                    visualizer.classList.remove('active');
+                });
+                
+                newAudio.addEventListener('ended', function() {
+                    visualizer.classList.remove('active');
+                });
+            }
+        });
+    }
+
+    // Call setupAudioVisualizers when the page loads
+    setupAudioVisualizers();
+
     // Prevent defaults for drag and drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, function(e) {
@@ -118,6 +150,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
+
+        // Set up audio visualizers after updating the stems section
+        setupAudioVisualizers();
     }
 
     separateBtn.addEventListener('click', async function() {
