@@ -1,7 +1,10 @@
 # 🎧 NOBS BEATS APP 🎵
 > *Where Music Production Meets Innovation* ✨
 
-![Music Production Toolkit](static/images/bg3.png)
+<div align="center">
+  <img src="static/images/bg3.png" alt="Music Production Toolkit" width="100%"/>
+  <h1 style="position: relative; margin-top: -80px; color: #ffffff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff; font-size: 3em; font-weight: 800;">NOBZ BEATS</h1>
+</div>
 
 <div align="center">
   
