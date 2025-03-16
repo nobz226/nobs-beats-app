@@ -39,21 +39,40 @@
 }
 
 .chat-controls button {
-    padding: 8px 16px;
+    padding: 1rem 2rem;
+    background: var(--primary-color);
+    color: white;
     border: none;
-    border-radius: 20px;
-    background-color: #F5F5DC;
-    color: #000000;
+    border-radius: 8px;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-semibold);
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: var(--font-primary);
-    font-size: var(--font-size-sm);
-    font-weight: var(--weight-medium);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(252, 66, 66, 0.3);
 }
 
 .chat-controls button:hover {
-    background-color: #fc4242;
-    opacity: 1;
+    background: #ff5a5a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(252, 66, 66, 0.4);
+}
+
+.chat-controls button:disabled {
+    background: rgba(252, 66, 66, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.chat-controls button:disabled:hover {
+    background: rgba(252, 66, 66, 0.3);
+    transform: none;
+    box-shadow: none;
 }
 
 .chat-messages {
@@ -174,20 +193,26 @@
 }
 
 #sendBtn {
-    padding: 8px 24px;
+    padding: 12px 24px;
+    background: var(--primary-color);
+    color: white;
     border: none;
-    border-radius: 20px;
-    background-color: #F5F5DC;
-    color: #000000;
+    border-radius: 8px;
+    font-family: var(--font-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--weight-semibold);
     cursor: pointer;
     transition: all 0.3s ease;
-    font-size: 14px;
-    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(252, 66, 66, 0.3);
 }
 
 #sendBtn:hover {
-    background-color: #fc4242;
-    opacity: 1;
+    background: #ff5a5a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(252, 66, 66, 0.4);
 }
 
 .suggestion-chips {
@@ -199,21 +224,24 @@
 
 .chip {
     padding: 8px 15px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
     font-family: var(--font-primary);
     font-size: var(--font-size-sm);
     font-weight: var(--weight-medium);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(252, 66, 66, 0.3);
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 .chip:hover {
-    background-color: #F5F5DC;
-    color: #000000;
-    border-color: transparent;
+    background: #ff5a5a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(252, 66, 66, 0.4);
 }
 
 /* Add some spacing for better readability */

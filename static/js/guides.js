@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let shouldStopTyping = false;
     let currentTypewriterTimeout = null;
 
+    // Initially disable the stop button since no response is in progress
+    stopResponseBtn.disabled = true;
+    
     // Scroll to bottom of chat
     function scrollToBottom() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -84,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
         isWaitingForResponse = true;
         shouldStopTyping = false;
 
-        // Show stop button when sending message
-        stopResponseBtn.style.display = 'block';
+        // Enable stop button when sending message
+        stopResponseBtn.disabled = false;
 
         // Add user message to chat
         addMessage(message, true);
@@ -117,8 +120,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 addMessage(data.answer);
             }
 
-            // Hide stop button after response is complete
-            stopResponseBtn.style.display = 'none';
+            // Disable stop button after response is complete
+            if (!isWaitingForResponse) {
+                stopResponseBtn.disabled = true;
+            }
 
         } catch (error) {
             console.error('Error:', error);
@@ -126,8 +131,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!shouldStopTyping) {
                 addMessage('Sorry, I encountered an error. Please try again in a moment.');
             }
-            // Hide stop button on error
-            stopResponseBtn.style.display = 'none';
+            // Disable stop button on error
+            stopResponseBtn.disabled = true;
         }
 
         isWaitingForResponse = false;
@@ -167,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         shouldStopTyping = true;
         isWaitingForResponse = false;
-        stopResponseBtn.style.display = 'none';
+        stopResponseBtn.disabled = true;
         
         chatMessages.innerHTML = `
             <div class="bot-message">
@@ -180,23 +185,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Stop Response button event listener
     stopResponseBtn.addEventListener('click', () => {
-        if (isWaitingForResponse) {
-            // Stop the typewriter effect
-            if (currentTypewriterTimeout) {
-                clearTimeout(currentTypewriterTimeout);
-                currentTypewriterTimeout = null;
-            }
-            shouldStopTyping = true;
-            isWaitingForResponse = false;
-            removeLoading();
-            
-            // Add a message indicating the response was stopped
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'bot-message';
-            messageDiv.innerHTML = 'Response stopped.';
-            chatMessages.appendChild(messageDiv);
-            scrollToBottom();
+        // Stop the typewriter effect
+        if (currentTypewriterTimeout) {
+            clearTimeout(currentTypewriterTimeout);
+            currentTypewriterTimeout = null;
         }
+        shouldStopTyping = true;
+        isWaitingForResponse = false;
+        removeLoading();
+        
+        // Add a message indicating the response was stopped
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'bot-message';
+        messageDiv.innerHTML = 'Response stopped.';
+        chatMessages.appendChild(messageDiv);
+        scrollToBottom();
+        
+        // Disable stop button after stopping
+        stopResponseBtn.disabled = true;
     });
-
 });
