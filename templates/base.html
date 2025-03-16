@@ -65,6 +65,47 @@
             background: rgba(252, 66, 66, 0.2) !important;
             border: 1px solid rgba(252, 66, 66, 0.5) !important;
         }
+        
+        /* Footer Styling */
+        .footer-info {
+            background: linear-gradient(
+                135deg,
+                #0a0a0a 0%,
+                rgba(252, 66, 66, 0.02) 50%,
+                #0a0a0a 100%
+            );
+            padding: 2rem;
+            position: relative;
+            margin-bottom: 0; /* Ensure no margin below footer */
+            margin-top: 2rem; /* Add some space between content and footer */
+            width: 100%;
+            text-align: center;
+        }
+        
+        .footer-info h3 {
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .footer-info p {
+            color: #cccccc;
+            font-size: 1rem;
+        }
+        
+        /* Make main a flex container to push footer to bottom */
+        main {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 80px);
+            padding-bottom: 0 !important; /* Override the padding in base.css */
+        }
+        
+        /* Style for content inside main to keep padding */
+        .content-wrapper {
+            padding: 40px 20px 0; /* Keep top/side padding but remove bottom padding */
+            flex: 1;
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -174,9 +215,36 @@
     </div>
 
     <!-- Main Content -->
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    <div id="main-content">
+        <div class="menu-container">
+            <nav class="main-menu">
+                <a href="{{ url_for('home') }}" class="menu-item"><i class="fas fa-home"></i><span>Home</span></a>
+                <a href="{{ url_for('showcase') }}" class="menu-item"><i class="fas fa-music"></i><span>Beats</span></a>
+                <a href="{{ url_for('audio.analyze_audio') }}" class="menu-item"><i class="fas fa-wave-square"></i><span>Analyzer</span></a>
+                <a href="{{ url_for('audio.stem_separator') }}" class="menu-item"><i class="fas fa-layer-group"></i><span>Separator</span></a>
+                <a href="{{ url_for('audio.converter') }}" class="menu-item"><i class="fas fa-exchange-alt"></i><span>Converter</span></a>
+                <a href="{{ url_for('youtube_converter') }}" class="menu-item"><i class="fab fa-youtube"></i><span>YouTube</span></a>
+                <a href="{{ url_for('guides') }}" class="menu-item"><i class="fas fa-book"></i><span>Guides</span></a>
+                <a href="{{ url_for('about') }}" class="menu-item"><i class="fas fa-info-circle"></i><span>About</span></a>
+                <div class="menu-footer">
+                    <a href="{{ url_for('admin') }}" class="admin-link"><i class="fas fa-lock"></i><span>Admin</span></a>
+                </div>
+            </nav>
+        </div>
+
+        <main>
+            <!-- Added content wrapper div -->
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+            
+            <!-- Global Footer added here -->
+            <div class="footer-info">
+                <h3>Nobz 2024</h3>
+                <p>Beats, Remixes and Audio Tools</p>
+            </div>
+        </main>
+    </div>
 
     <!-- Core Scripts -->
     <script src="{{ url_for('static', filename='js/player.js') }}"></script>

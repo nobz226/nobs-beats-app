@@ -114,11 +114,6 @@
             </div>
         </div>
     </div>
-    
-    <div class="footer-info">
-        <h3>Nobz 2024</h3>
-        <p>Beats, Remixes and Audio Tools</p>
-    </div>
 </div>
 {% endblock %}
 
@@ -551,6 +546,7 @@
         color: #cccccc;
     }
     
+    /* Feature link button - Adjusted positioning */
     .feature-link {
         display: inline-block;
         padding: 0.6rem 1.5rem;
@@ -582,33 +578,11 @@
         transform: translateX(-50%) translateY(-2px);
     }
     
-    /* Footer info section - Add gradient */
-    .footer-info {
-        background: linear-gradient(
-            135deg,
-            #0a0a0a 0%,
-            rgba(252, 66, 66, 0.02) 50%,
-            #0a0a0a 100%
-        );
-        padding: 2rem;
-        position: relative;
-        margin-bottom: 0; /* Ensure no margin below footer */
-    }
-    
-    .footer-info h3 {
-        color: #ffffff;
-        margin-bottom: 0.5rem;
-    }
-    
-    .footer-info p {
-        color: #cccccc;
-    }
-    
     /* Animation Keyframes */
     @keyframes fadeInUp {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px);
         }
         to {
             opacity: 1;
@@ -701,11 +675,6 @@
         height: 3px !important;
         width: 15px !important; /* Make the cursor slightly wider for better visibility */
         transform: translateY(5px) !important; /* Additional adjustment to move cursor down */
-    }
-
-    /* Make the footer stick to the bottom */
-    .footer-info {
-        margin-top: auto; /* Push footer to bottom of flex container */
     }
 </style>
 {% endblock %}
