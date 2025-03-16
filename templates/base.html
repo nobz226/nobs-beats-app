@@ -216,22 +216,6 @@
 
     <!-- Main Content -->
     <div id="main-content">
-        <div class="menu-container">
-            <nav class="main-menu">
-                <a href="{{ url_for('index') }}" class="menu-item"><i class="fas fa-home"></i><span>Home</span></a>
-                <a href="{{ url_for('showcase') }}" class="menu-item"><i class="fas fa-music"></i><span>Beats</span></a>
-                <a href="{{ url_for('audio.analyze_audio') }}" class="menu-item"><i class="fas fa-wave-square"></i><span>Analyzer</span></a>
-                <a href="{{ url_for('audio.stem_separator') }}" class="menu-item"><i class="fas fa-layer-group"></i><span>Separator</span></a>
-                <a href="{{ url_for('audio.converter') }}" class="menu-item"><i class="fas fa-exchange-alt"></i><span>Converter</span></a>
-                <a href="{{ url_for('youtube_converter') }}" class="menu-item"><i class="fab fa-youtube"></i><span>YouTube</span></a>
-                <a href="{{ url_for('guides') }}" class="menu-item"><i class="fas fa-book"></i><span>Guides</span></a>
-                <a href="{{ url_for('about') }}" class="menu-item"><i class="fas fa-info-circle"></i><span>About</span></a>
-                <div class="menu-footer">
-                    <a href="{{ url_for('admin_panel') }}" class="admin-link"><i class="fas fa-lock"></i><span>Admin</span></a>
-                </div>
-            </nav>
-        </div>
-
         <main>
             <!-- Added content wrapper div -->
             <div class="content-wrapper">
