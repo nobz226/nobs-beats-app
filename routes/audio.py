@@ -59,25 +59,19 @@ def analyze_audio():
             
             try:
                 print("Starting audio analysis...")
-                # Use a simplified approach for testing
-                print("Using simplified analysis for testing")
+                # Call the actual audio analysis function
+                print("Calling analyze_audio_file function...")
                 
-                # Create a simple response dictionary
-                response_data = {
-                    'success': True,
-                    'tempo': 120,
-                    'key': 'C'
-                }
-                
-                print("Response data:", response_data)
+                result = analyze_audio_file(input_path)
+                print("Analysis result:", result)
                 
                 # Use Flask's Response object directly
                 from flask import Response
                 import json
                 
                 response = Response(
-                    response=json.dumps(response_data),
-                    status=200,
+                    response=json.dumps(result),
+                    status=200 if result.get('success', False) else 500,
                     mimetype="application/json"
                 )
                 
