@@ -119,9 +119,6 @@
         <h3>Nobz 2024</h3>
         <p>Beats, Remixes and Audio Tools</p>
     </div>
-
-    <!-- Added spacer div with reduced height -->
-    <div class="bottom-spacer"></div>
 </div>
 {% endblock %}
 
@@ -137,6 +134,9 @@
         margin: 0;
         overflow-x: hidden;
         width: 100%;
+        min-height: 100vh; /* Minimum height of viewport */
+        display: flex;
+        flex-direction: column;
     }
     
     /* Hero Section */
@@ -202,7 +202,8 @@
     /* Section Title Styling - Moved here to apply to all sections */
     .section-title {
         text-align: center;
-        margin-bottom: 2.5rem;
+        margin-bottom: 1.5rem; /* Reduced from 2.5rem to 1.5rem to create less space */
+        padding-top: 1.5rem; /* Added padding to move titles lower */
         font-size: 2.2rem;
         color: #ffffff;
         position: relative;
@@ -220,7 +221,7 @@
     /* Latest Beats Section - Updated gradient and padding */
     .latest-section {
         margin: 0;
-        padding: 4rem 2rem;  /* Reduced from 6rem to 4rem */
+        padding: 3rem 2rem 1rem 2rem;  /* Reduced bottom padding from 2rem to 1rem */
         background: linear-gradient(
             135deg,
             #0a0a0a 0%,
@@ -231,18 +232,26 @@
         overflow: hidden;
     }
     
+    /* Remove the custom spacing that was added */
+    .latest-section .section-title {
+        margin-bottom: 0.2rem; /* Reduced from 0.5rem to 0.2rem */
+    }
+    
     .latest-content {
         display: flex;
         align-items: center;
         justify-content: center;
-        max-width: 1000px;
+        max-width: 800px; /* Reduced from 1000px to 800px */
         margin: 0 auto;
         gap: 2rem;
+        padding-bottom: 0; /* Removed bottom padding completely */
+        margin-bottom: -0.5rem; /* Negative margin to pull content up */
+        margin-top: 0; /* Remove top margin to let the title spacing control the distance */
     }
     
     .latest-text {
         flex: 1;
-        max-width: 500px;
+        max-width: 400px; /* Reduced from 500px to 400px */
         text-align: left;
         z-index: 2;
     }
@@ -274,16 +283,16 @@
     
     .vinyl-wrapper {
         position: relative;
-        width: 350px;
-        height: 350px;
+        width: 300px; /* Reduced from 350px to 300px */
+        height: 300px; /* Reduced from 350px to 300px */
         display: flex;
         justify-content: center;
         align-items: center;
     }
     
     .vinyl-image {
-        width: 300px;
-        height: 300px;
+        width: 260px; /* Reduced from 300px to 260px */
+        height: 260px; /* Reduced from 300px to 260px */
         position: relative;
         opacity: 0.85;
         animation: rotate 20s linear infinite;
@@ -308,6 +317,10 @@
         overflow: hidden;
     }
 
+    .features-section .section-title {
+        margin-bottom: 1.5rem; /* Reduced from 3rem to 1.5rem to be consistent */
+    }
+
     .features-section::before {
         content: '';
         position: absolute;
@@ -327,6 +340,7 @@
     .carousel-container {
         max-width: 1200px;
         margin: 0 auto;
+        margin-top: 0; /* Remove top margin to let the title spacing control the distance */
         position: relative;
         z-index: 1;
         overflow: hidden;
@@ -578,6 +592,7 @@
         );
         padding: 2rem;
         position: relative;
+        margin-bottom: 0; /* Ensure no margin below footer */
     }
     
     .footer-info h3 {
@@ -587,12 +602,6 @@
     
     .footer-info p {
         color: #cccccc;
-    }
-    
-    /* Add bottom spacer styling */
-    .bottom-spacer {
-        height: 75px;
-        width: 100%;
     }
     
     /* Animation Keyframes */
@@ -636,23 +645,18 @@
         
         .latest-text {
             text-align: center;
-            order: 2;
-        }
-        
-        .latest-text .section-title {
-            text-align: center;
+            max-width: 100%;
         }
         
         .vinyl-wrapper {
-            width: 250px;
-            height: 250px;
-            order: 1;
+            width: 220px;
+            height: 220px;
             margin-bottom: 1rem;
         }
         
         .vinyl-image {
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
         }
         
         .feature-cards {
@@ -697,6 +701,11 @@
         height: 3px !important;
         width: 15px !important; /* Make the cursor slightly wider for better visibility */
         transform: translateY(5px) !important; /* Additional adjustment to move cursor down */
+    }
+
+    /* Make the footer stick to the bottom */
+    .footer-info {
+        margin-top: auto; /* Push footer to bottom of flex container */
     }
 </style>
 {% endblock %}
