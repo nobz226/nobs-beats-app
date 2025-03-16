@@ -7,9 +7,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressBar = document.querySelector('.separator-progress');
     const statusText = document.querySelector('.separator-status-text');
     const stemsSection = document.querySelector('.stems-section');
+    
+    // Warning section elements
+    const separationWarning = document.getElementById('separation-warning');
+    const cancelSeparationBtn = document.getElementById('cancel-separation');
+    const confirmSeparationBtn = document.getElementById('confirm-separation');
 
     let selectedFile = null;
     let currentSessionId = null;
+    let isProcessing = false;
+
+    // Function to show the warning
+    function showWarning() {
+        separationWarning.style.display = 'block';
+        
+        // Scroll to the warning box with smooth animation
+        separationWarning.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Function to hide the warning
+    function hideWarning() {
+        separationWarning.style.display = 'none';
+    }
+
+    // Add event listener for the cancel button
+    cancelSeparationBtn.addEventListener('click', function() {
+        // Hide the warning
+        hideWarning();
+    });
 
     // Function to set up audio visualizers for stem cards
     function setupAudioVisualizers() {
@@ -161,7 +186,25 @@ document.addEventListener('DOMContentLoaded', function() {
         setupAudioVisualizers();
     }
 
-    separateBtn.addEventListener('click', async function() {
+    // Modify the separate button click handler to show the warning first
+    separateBtn.addEventListener('click', function() {
+        if (!selectedFile) return;
+        
+        // Show the warning section instead of starting the process immediately
+        showWarning();
+    });
+    
+    // Add event listener for the confirm button to actually start the separation
+    confirmSeparationBtn.addEventListener('click', async function() {
+        // Hide the warning
+        hideWarning();
+        
+        // Start the separation process
+        await startSeparation();
+    });
+    
+    // Function to actually start the separation process
+    async function startSeparation() {
         if (!selectedFile) return;
 
         const formData = new FormData();
@@ -174,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
         statusText.textContent = 'Processing... This may take a few minutes.';
         separateBtn.disabled = true;
         stemsSection.style.display = 'none';
+        isProcessing = true;
 
         try {
             progressBar.style.width = '50%';
@@ -195,6 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusText.textContent = 'Separation complete! Click to download stems.';
                 currentSessionId = data.session_id;
                 updateStemsSection(data);
+                isProcessing = false;
             } else {
                 throw new Error(data.error || 'Separation failed');
             }
@@ -203,13 +248,21 @@ document.addEventListener('DOMContentLoaded', function() {
             progressBar.style.width = '100%';
             statusText.style.color = '#ff4081';
             showError(error.message || 'Error during separation');
+            isProcessing = false;
         } finally {
             separateBtn.disabled = false;
         }
-    });
+    }
 
     // Clean up when leaving page
-    window.addEventListener('beforeunload', function() {
+    window.addEventListener('beforeunload', function(e) {
+        if (currentSessionId && isProcessing) {
+            // Show a warning message when leaving during processing
+            const message = 'Stem separation is still in progress. If you leave, it will continue but results may be lost.';
+            e.returnValue = message;
+            return message;
+        }
+        
         if (currentSessionId) {
             console.log(`Cleaning up session: ${currentSessionId}`);
             // Use sendBeacon for reliable delivery during page unload

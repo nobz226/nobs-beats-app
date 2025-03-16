@@ -6,7 +6,7 @@
     <div class="hero-section">
     <div class="title-container">
             <h1 class="text-title"><span class="word">Nobz</span> <span class="word">Beats</span></h1>
-            <p class="tagline">Elevate Your Sound</p>
+            <p class="subtitle">Elevate Your Sound</p>
         </div>
     </div>
     
@@ -127,6 +127,11 @@
 
 {% block extra_css %}
 <style>
+    /* Custom styles for home page */
+    .tagline {
+        font-size: var(--font-size-xl) !important; /* Keep original size */
+    }
+    
     .home-content {
         padding: 0;
         margin: 0;
@@ -178,7 +183,7 @@
         vertical-align: baseline !important;
     }
     
-    .tagline {
+    .subtitle {
         font-family: var(--font-accent);
         font-size: var(--font-size-xl);
         font-weight: var(--weight-medium);
@@ -192,6 +197,24 @@
     @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
+    }
+    
+    /* Section Title Styling - Moved here to apply to all sections */
+    .section-title {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        font-size: 2.2rem;
+        color: #ffffff;
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #fc4242, transparent);
+        margin: 15px auto 0;
     }
     
     /* Latest Beats Section - Updated gradient and padding */
@@ -298,23 +321,6 @@
             transparent 80%
         );
         z-index: 0;
-    }
-    
-    .section-title {
-        text-align: center;
-        margin-bottom: 2.5rem;
-        font-size: 2.2rem;
-        color: #ffffff;
-        position: relative;
-    }
-
-    .section-title::after {
-        content: '';
-        display: block;
-        width: 60px;
-        height: 3px;
-        background: linear-gradient(90deg, transparent, #fc4242, transparent);
-        margin: 15px auto 0;
     }
     
     /* Carousel Styling */

@@ -30,6 +30,20 @@
             <i class="fas fa-layer-group"></i>
         </button>
 
+        <!-- Simple Warning Section (Initially Hidden) -->
+        <div id="separation-warning" class="separation-warning" style="display: none;">
+            <h3>Important Notice</h3>
+            <ul>
+                <li>Once started, the process cannot be stopped until complete</li>
+                <li>Please do not leave this page or close your browser</li>
+                <li>This may take several minutes depending on your file</li>
+            </ul>
+            <div class="warning-actions">
+                <button id="cancel-separation" class="warning-btn cancel-btn">Cancel</button>
+                <button id="confirm-separation" class="warning-btn confirm-btn">Continue</button>
+            </div>
+        </div>
+
         <div class="separation-status" style="display: none;">
             <div class="separator-progress-container">
                 <div class="separator-progress"></div>
@@ -133,6 +147,7 @@
         </div>
     </div>
 </div>
+
 <div class="stems-output alternate-section">
     <!-- Stems output content -->
 </div>
@@ -295,6 +310,74 @@
     
     .notification.error i {
         color: #F44336;
+    }
+
+    /* Simple Warning Styles */
+    .separation-warning {
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        border-left: 3px solid #ff5a5a;
+    }
+    
+    .separation-warning h3 {
+        color: #ff5a5a;
+        margin: 0 0 15px 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    .separation-warning ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+    }
+    
+    .separation-warning li {
+        padding: 8px 0;
+        color: #fff;
+        position: relative;
+        padding-left: 20px;
+    }
+    
+    .separation-warning li:before {
+        content: "•";
+        color: #ff5a5a;
+        position: absolute;
+        left: 0;
+    }
+    
+    .warning-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    
+    .warning-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    
+    .cancel-btn {
+        background-color: #333;
+        color: white;
+    }
+    
+    .cancel-btn:hover {
+        background-color: #444;
+    }
+    
+    .confirm-btn {
+        background-color: #ff5a5a;
+        color: white;
+    }
+    
+    .confirm-btn:hover {
+        background-color: #ff6b6b;
     }
 </style>
 {% endblock %}

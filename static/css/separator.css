@@ -164,14 +164,12 @@ h2 {
 
 #separate-btn:not(:disabled):hover {
     background: #ff5a5a;
-    transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(252, 66, 66, 0.4);
 }
 
 .separation-status {
     text-align: center;
     margin: 1rem 0;
-    animation: fadeIn 0.5s ease;
 }
 
 .separator-progress-container {
@@ -187,7 +185,6 @@ h2 {
     background: linear-gradient(90deg, var(--primary-color), #ff8a8a);
     width: 0%;
     border-radius: 5px;
-    transition: width 0.3s ease;
 }
 
 .separator-status-text {
@@ -203,7 +200,6 @@ h2 {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.5rem;
     margin-top: 2rem;
-    animation: fadeIn 0.8s ease;
 }
 
 .stem-card {
@@ -215,7 +211,6 @@ h2 {
     align-items: center;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
 }
@@ -229,11 +224,9 @@ h2 {
     height: 5px;
     background: linear-gradient(90deg, var(--primary-color), #ff8a8a);
     opacity: 0;
-    transition: all 0.3s ease;
 }
 
 .stem-card:hover {
-    transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     border-color: rgba(255, 255, 255, 0.1);
 }
@@ -256,6 +249,17 @@ h2 {
     border-radius: 5px;
 }
 
+.stem-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.stem-card:hover .stem-icon {
+    opacity: 1;
+}
+
 .download-btn {
     padding: 10px 20px;
     background: rgba(255, 255, 255, 0.1);
@@ -266,7 +270,6 @@ h2 {
     font-size: var(--font-size-sm);
     font-weight: var(--weight-medium);
     cursor: pointer;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -277,7 +280,6 @@ h2 {
 .download-btn:hover {
     background: var(--primary-color);
     color: #fff;
-    transform: translateY(-2px);
 }
 
 .download-btn i {
@@ -289,14 +291,11 @@ h2 {
     font-size: 2.5rem !important;
     color: rgba(255, 255, 255, 0.5) !important;
     margin-bottom: 1rem !important;
-    transition: all 0.3s ease !important;
     opacity: 1 !important;
 }
 
 .file-drop-area:hover .file-icon {
     color: var(--primary-color) !important;
-    transform: translateY(-5px) !important;
-    opacity: 1 !important;
 }
 
 /* Specific styling for the separator file icon to match analyzer.css */
@@ -304,14 +303,11 @@ h2 {
     font-size: 2.5rem !important;
     color: rgba(255, 255, 255, 0.5) !important;
     margin-bottom: 1rem !important;
-    transition: all 0.3s ease !important;
     opacity: 1 !important;
 }
 
 .file-drop-area:hover .separator-file-icon {
     color: var(--primary-color) !important;
-    transform: translateY(-5px) !important;
-    opacity: 1 !important;
 }
 
 /* Add spacing after the stems-output section */
