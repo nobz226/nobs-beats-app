@@ -29,11 +29,72 @@ document.addEventListener("DOMContentLoaded", () => {
   let trackList = [];
   let wasPlaying = false;
 
+  // Function to check if current device is mobile
+  function isMobileDevice() {
+    return window.innerWidth <= 768; // Consider devices up to 768px wide as mobile
+  }
+
   // Initialize repeat button state
   player.repeatBtn.style.opacity = "0.5";
 
   // Initialize toggle button icon
   updateToggleButtonIcon();
+  
+  // Add scroll event listener to ensure player visibility on mobile
+  if (isMobileDevice()) {
+    window.addEventListener('scroll', () => {
+      ensurePlayerVisibility();
+    });
+  }
+  
+  // Function to ensure player and toggle button visibility on mobile
+  function ensurePlayerVisibility() {
+    if (!isMobileDevice()) return;
+    
+    // Make sure toggle button is always visible
+    if (player.toggleBtn) {
+      player.toggleBtn.style.display = 'flex';
+      player.toggleBtn.style.visibility = 'visible';
+      player.toggleBtn.style.opacity = '1';
+      player.toggleBtn.style.position = 'fixed';
+      player.toggleBtn.style.zIndex = '951';
+      
+      // Position differently based on player state
+      if (isPlayerHidden) {
+        player.toggleBtn.style.bottom = '0';
+        player.toggleBtn.style.left = '50%';
+        player.toggleBtn.style.transform = 'translateX(-50%)';
+      } else {
+        // Use different position based on screen size
+        if (window.innerWidth <= 480) {
+          player.toggleBtn.style.bottom = '90px';
+          player.toggleBtn.style.right = '15px';
+        } else {
+          player.toggleBtn.style.bottom = '70px';
+          player.toggleBtn.style.right = '15px';
+        }
+        player.toggleBtn.style.transform = 'translateX(0)';
+      }
+    }
+    
+    // Make sure player is always visible when active
+    if (player.playerContainer && player.playerContainer.classList.contains('active')) {
+      player.playerContainer.style.position = 'fixed';
+      player.playerContainer.style.bottom = '0';
+      player.playerContainer.style.zIndex = '950';
+      
+      if (isPlayerHidden) {
+        // Different transform based on screen size
+        if (window.innerWidth <= 480) {
+          player.playerContainer.style.transform = 'translateY(calc(100% - 25px))';
+        } else {
+          player.playerContainer.style.transform = 'translateY(calc(100% - 35px))';
+        }
+      } else {
+        player.playerContainer.style.transform = 'translateY(0)';
+      }
+    }
+  }
 
   // Function to update toggle button icon based on player state
   function updateToggleButtonIcon() {
@@ -49,6 +110,11 @@ document.addEventListener("DOMContentLoaded", () => {
       // Ensure visibility
       player.toggleBtn.style.display = 'flex';
       player.toggleBtn.style.opacity = '1';
+    }
+    
+    // Ensure player visibility on mobile
+    if (isMobileDevice()) {
+      ensurePlayerVisibility();
     }
   }
 
@@ -71,6 +137,11 @@ document.addEventListener("DOMContentLoaded", () => {
     
     updateToggleButtonIcon();
     saveState();
+    
+    // Ensure visibility on mobile
+    if (isMobileDevice()) {
+      ensurePlayerVisibility();
+    }
   });
 
   // Function to check if artwork should spin (has 'vinyl' in the name)
@@ -82,61 +153,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Function to manage artwork spinning
   const updateArtworkSpinning = (isPlaying) => {
-    // Get all primary artworks
-    const allShowcaseArtworks = document.querySelectorAll(
-      ".track-card .track-artwork"
-    );
-
-    // Stop all artworks from spinning first
-    allShowcaseArtworks.forEach((artwork) => {
-      artwork.classList.remove("spinning", "paused");
-    });
-
-    // Get the global player artwork and current track's primary artwork
-    const globalArtwork = document.querySelector(
-      ".global-player-info .track-artwork"
-    );
-    const currentShowcaseArtwork = currentTrackIndex >= 0 && currentTrackIndex < allShowcaseArtworks.length ? 
-      allShowcaseArtworks[currentTrackIndex] : null;
-
-    // Update global player artwork
-    if (globalArtwork) {
+    // Check if we have an artwork element
+    const artworkElement = document.querySelector('.track-artwork');
+    if (!artworkElement) return;
+    
+    // Only apply spinning animation on desktop
+    if (!isMobileDevice()) {
       if (isPlaying) {
-        globalArtwork.classList.add("spinning");
-        globalArtwork.classList.remove("paused");
+        artworkElement.classList.add('spinning');
+        artworkElement.classList.remove('paused');
       } else {
-        // When paused, add paused class and remove spinning
-        globalArtwork.classList.remove("spinning");
-        globalArtwork.classList.add("paused");
+        artworkElement.classList.add('paused');
+        artworkElement.classList.remove('spinning');
       }
-    }
-
-    // Update current track artwork in showcase
-    if (currentShowcaseArtwork) {
-      if (isPlaying) {
-        currentShowcaseArtwork.classList.add("spinning");
-        currentShowcaseArtwork.classList.remove("paused");
-      } else {
-        // When paused, add paused class and remove spinning
-        currentShowcaseArtwork.classList.remove("spinning");
-        currentShowcaseArtwork.classList.add("paused");
-      }
-    }
-
-    // Also update any secondary artwork if present
-    if (currentTrackIndex >= 0) {
-      const secondaryArtworks = document.querySelectorAll(".track-artwork-secondary");
-      if (secondaryArtworks.length > 0 && currentTrackIndex < secondaryArtworks.length) {
-        const currentSecondaryArtwork = secondaryArtworks[currentTrackIndex];
-        if (currentSecondaryArtwork) {
-          if (isPlaying) {
-            currentSecondaryArtwork.classList.add("spinning");
-            currentSecondaryArtwork.classList.remove("paused");
-          } else {
-            currentSecondaryArtwork.classList.add("paused");
-          }
-        }
-      }
+    } else {
+      // On mobile, remove all spinning/paused classes
+      artworkElement.classList.remove('spinning', 'paused');
     }
   };
 
@@ -222,8 +254,8 @@ document.addEventListener("DOMContentLoaded", () => {
       isPlayerHidden = state.isPlayerHidden !== undefined ? state.isPlayerHidden : true;
       player.repeatBtn.style.opacity = isRepeatEnabled ? "1" : "0.5";
 
-      // Restore artwork if available
-      if (state.artworkSrc) {
+      // Restore artwork if available and on desktop
+      if (state.artworkSrc && !isMobileDevice()) {
         player.artworkImage.src = state.artworkSrc;
         player.artworkImage.style.display = "block";
         
@@ -303,7 +335,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       player.audio.src = trackUrl;
       player.trackName.textContent = trackName;
-      if (trackArtwork) {
+      
+      // Only load and display artwork on desktop
+      if (!isMobileDevice() && trackArtwork) {
         player.artworkImage.src = trackArtwork;
         player.artworkImage.style.display = "block";
         
@@ -409,17 +443,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const track = trackList[currentTrackIndex];
     player.audio.src = track.url;
     player.trackName.textContent = track.name;
-    player.artworkImage.src = track.artwork;
-    player.artworkImage.style.display = "block";
     
-    // Ensure proper scaling and dimensions
-    player.artworkImage.style.width = "100%";
-    player.artworkImage.style.height = "100%";
-    player.artworkImage.style.objectFit = "contain";
-    player.artworkImage.style.borderRadius = "50%";
-    
-    if (player.artworkPlaceholder) {
-      player.artworkPlaceholder.style.display = "none";
+    // Only show artwork on desktop
+    if (!isMobileDevice()) {
+      player.artworkImage.src = track.artwork;
+      player.artworkImage.style.display = "block";
+      
+      // Ensure proper scaling and dimensions
+      player.artworkImage.style.width = "100%";
+      player.artworkImage.style.height = "100%";
+      player.artworkImage.style.objectFit = "contain";
+      player.artworkImage.style.borderRadius = "50%";
+      
+      if (player.artworkPlaceholder) {
+        player.artworkPlaceholder.style.display = "none";
+      }
     }
     
     // Update play button icon
@@ -444,17 +482,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const track = trackList[currentTrackIndex];
     player.audio.src = track.url;
     player.trackName.textContent = track.name;
-    player.artworkImage.src = track.artwork;
-    player.artworkImage.style.display = "block";
     
-    // Ensure proper scaling and dimensions
-    player.artworkImage.style.width = "100%";
-    player.artworkImage.style.height = "100%";
-    player.artworkImage.style.objectFit = "contain";
-    player.artworkImage.style.borderRadius = "50%";
-    
-    if (player.artworkPlaceholder) {
-      player.artworkPlaceholder.style.display = "none";
+    // Only show artwork on desktop
+    if (!isMobileDevice()) {
+      player.artworkImage.src = track.artwork;
+      player.artworkImage.style.display = "block";
+      
+      // Ensure proper scaling and dimensions
+      player.artworkImage.style.width = "100%";
+      player.artworkImage.style.height = "100%";
+      player.artworkImage.style.objectFit = "contain";
+      player.artworkImage.style.borderRadius = "50%";
+      
+      if (player.artworkPlaceholder) {
+        player.artworkPlaceholder.style.display = "none";
+      }
     }
     
     // Update play button icon
@@ -547,8 +589,33 @@ document.addEventListener("DOMContentLoaded", () => {
   restoreState();
   updatePlayerLayout();
   
-  // Initialize audio visualizer
-  initAudioVisualizer();
+  // Initialize audio visualizer only on desktop
+  if (!isMobileDevice()) {
+    initAudioVisualizer();
+  } else {
+    console.log("Mobile device detected, skipping audio visualizer initialization");
+  }
+  
+  // Add resize listener to handle device transitions
+  window.addEventListener('resize', function() {
+    // If device switches between mobile and desktop, refresh the page to reinitialize components
+    const wasMobile = isMobileDevice();
+    
+    // Add debounce to avoid multiple quick triggers
+    clearTimeout(window.resizeTimeout);
+    window.resizeTimeout = setTimeout(function() {
+      const isMobileNow = isMobileDevice();
+      if (wasMobile !== isMobileNow) {
+        // Device has switched between mobile and desktop mode
+        // We could reload the page, but for a smoother experience, we'll just update components
+        
+        // Reinitialize visualizer if we're now on desktop
+        if (!isMobileNow) {
+          initAudioVisualizer();
+        }
+      }
+    }, 250);
+  });
   
   // Function to initialize the audio visualizer
   function initAudioVisualizer() {

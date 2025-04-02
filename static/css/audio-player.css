@@ -420,6 +420,17 @@
     #global-audio-player {
         padding: 8px 10px;
         min-height: 70px;
+        /* Ensure player stays fixed during scrolling */
+        position: fixed !important;
+        bottom: 0 !important;
+        z-index: 950 !important;
+    }
+    
+    /* Ensure active player is visible */
+    #global-audio-player.active {
+        transform: translateY(0) !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
     
     .global-player-controls {
@@ -439,30 +450,37 @@
         font-size: 16px !important;
     }
     
-    .artwork-container {
-        width: calc(var(--global-artwork-size) * 1.2);
-        height: calc(var(--global-artwork-size) * 1.2);
+    /* Hide artwork container completely on tablet and mobile */
+    .artwork-container, #global-audio-player .artwork-container {
+        display: none !important;
     }
     
-    #global-audio-player .artwork-container {
-        width: calc(var(--global-artwork-size) * 1.2);
-        height: calc(var(--global-artwork-size) * 1.2);
+    /* Expand track details to fill space */
+    .track-details {
+        flex: 1;
+        width: 100%;
+        margin-left: 0;
     }
     
     .track-name {
         font-size: 14px;
+        margin-top: 5px;
     }
     
     .progress-container {
         height: 20px;
+        margin: 10px 0;
     }
     
+    /* Hide visualizer on tablet and mobile */
     .visualizer-container {
-        height: 14px;
+        display: none !important;
     }
     
-    .visualizer-bar {
-        width: 2px;
+    /* Disable spinning animation for vinyl artwork */
+    #global-audio-player .track-artwork.spinning {
+        animation: none !important;
+        transform: rotate(0deg) !important;
     }
     
     .time-info {
@@ -473,15 +491,35 @@
     .global-toggle-btn {
         width: 40px;
         height: 20px;
+        bottom: 70px !important;
+        right: 15px !important;
+        /* Ensure button stays fixed during scrolling */
+        position: fixed !important;
+        z-index: 951 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    /* When player is hidden, position toggle at bottom */
+    #global-audio-player.hidden ~ .global-toggle-btn,
+    #global-audio-player:not(.active) ~ .global-toggle-btn {
+        bottom: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        position: fixed !important;
     }
     
     /* When player is fully visible */
     #global-audio-player.active:not(.hidden) ~ .global-toggle-btn {
-        bottom: 70px;
+        bottom: 70px !important;
+        right: 15px !important;
+        position: fixed !important;
     }
     
     #global-audio-player.hidden {
-        transform: translateY(calc(100% - 35px));
+        transform: translateY(calc(100% - 35px)) !important;
+        position: fixed !important;
+        bottom: 0 !important;
     }
 }
 
@@ -489,6 +527,10 @@
     #global-audio-player {
         padding: 5px 8px;
         min-height: 60px;
+        /* Ensure player stays fixed during scrolling */
+        position: fixed !important;
+        bottom: 0 !important;
+        z-index: 950 !important;
     }
     
     .global-player-controls {
@@ -505,6 +547,11 @@
         gap: 10px;
     }
     
+    /* Ensure artwork container is completely hidden on phones */
+    .artwork-container, #global-audio-player .artwork-container {
+        display: none !important;
+    }
+    
     .global-restart-btn,
     .global-repeat-btn {
         display: none;
@@ -518,32 +565,55 @@
         height: 18px;
     }
     
+    /* Ensure visualizer is hidden on phone */
     .visualizer-container {
-        height: 12px;
+        display: none !important;
     }
     
-    .visualizer-bar {
-        width: 1px;
+    /* Ensure vinyl artwork doesn't spin on phone */
+    #global-audio-player .track-artwork.spinning {
+        animation: none !important;
+        transform: rotate(0deg) !important;
     }
-
+    
     /* Toggle button mobile styles */
     .global-toggle-btn {
         width: 36px;
         height: 18px;
         border-radius: 8px 8px 0 0;
+        bottom: 90px !important;
+        right: 15px !important;
+        /* Ensure button stays fixed during scrolling */
+        position: fixed !important;
+        z-index: 951 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
     
     .global-toggle-btn i {
         font-size: 12px;
     }
     
-    #global-audio-player.hidden {
-        transform: translateY(calc(100% - 25px));
+    /* When player is hidden, position toggle at bottom */
+    #global-audio-player.hidden ~ .global-toggle-btn,
+    #global-audio-player:not(.active) ~ .global-toggle-btn {
+        bottom: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        position: fixed !important;
     }
     
     /* When player is fully visible */
     #global-audio-player.active:not(.hidden) ~ .global-toggle-btn {
-        bottom: 60px;
+        bottom: 90px !important;
+        right: 15px !important;
+        position: fixed !important;
+    }
+    
+    #global-audio-player.hidden {
+        transform: translateY(calc(100% - 25px)) !important;
+        position: fixed !important;
+        bottom: 0 !important;
     }
 }
 
