@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+.venv
+*.sqlite
+.DS_Storeflask_app.log
+flask_app.log
